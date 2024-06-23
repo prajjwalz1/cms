@@ -22,7 +22,7 @@ class CategoryAPIView(ResponseMixin, APIView):
         request_type=request.GET.get("request")
         if request_type and request_type=="getallcategory":
             return self.getallcategory(self)
-
+        
 
         try:
             paginator = self.pagination_class()

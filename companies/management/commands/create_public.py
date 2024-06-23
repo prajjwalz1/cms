@@ -1,20 +1,28 @@
 from django.core.management.base import BaseCommand
 from companies.models import Client, Domain
+from datetime import date
 
 class Command(BaseCommand):
-    help = 'Create the public tenant and its domain'
+    help = 'Create or update the public tenant and its domains'
 
     def handle(self, *args, **kwargs):
-        tenant = Client(schema_name='public2',
-                        name='Schemas Inc.',
-                        paid_until='2016-12-05',
-                        on_trial=False)
-        tenant.save()
+        tenant, created = Client.objects.update_or_create(
+            schema_name='public',
+            defaults={
+                'name': 'Schemas Inc.',
+                'paid_until': date(2016, 12, 5),
+                'on_trial': False
+            }
+        )
 
-        domain = Domain()
-        domain.domain = 'localhost'  # don't add your port or www here! On a local server, use 'localhost'
-        domain.tenant = tenant
-        domain.is_primary = True
-        domain.save()
+        domains = ['127.0.0.1']
+        for domain_name in domains:
+            domain, created = Domain.objects.update_or_create(
+                domain=domain_name,
+                tenant=tenant,
+                defaults={
+                    'is_primary': True
+                }
+            )
 
-        self.stdout.write(self.style.SUCCESS('Successfully created public tenant and domain'))
+        self.stdout.write(self.style.SUCCESS('Successfully created or updated public tenant and domains'))
