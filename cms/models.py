@@ -31,7 +31,7 @@ class BrandModel(DateTimeModel):
 
 class SupplierModel(DateTimeModel):
     name = models.CharField(max_length=255, unique=True)
-    phone = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    phone = models.CharField(max_length=100,null=False,blank=False)
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     street = models.CharField(max_length=255, blank=True, null=True)
