@@ -13,17 +13,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 import environ
+
 env = environ.Env()
 
-# from users.models import UserProfile
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_file = BASE_DIR / '.env'
-print(env_file)
 if env_file.exists():
     environ.Env.read_env(env_file)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -39,31 +36,21 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-SHARED_APPS = [
-    'django_tenants',
+INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.admin',
-    'django.contrib.messages',
     'django.contrib.sessions',
+    'django.contrib.messages',
     'django.contrib.staticfiles',
-    'companies',
-    'publicapp'
+    'users',
+    # 'companies',
+    'publicapp',
+    'cms',
     
 ]
 
-TENANT_APPS = [
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'cms',  # Moved from SHARED_APPS to TENANT_APPS
-    'users',
-
-]
-
-INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
-
 MIDDLEWARE = [
-    'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -98,7 +85,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django_tenants.postgresql_backend",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get('DATABASE_NAME'),
         "USER": os.environ.get('DATABASE_USER'),
         "PASSWORD": os.environ.get('DATABASE_PASSWORD'),
@@ -106,10 +93,6 @@ DATABASES = {
         "PORT": os.environ.get('DATABASE_PORT'),
     }
 }
-print(DATABASES)
-DATABASE_ROUTERS = (
-    'django_tenants.routers.TenantSyncRouter',
-)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -148,26 +131,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# This is optional, but you can separate tenant static files from shared static files
-TENANT_STATIC_PREFIX = 'tenant-static'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-PUBLIC_SCHEMA_URLCONF = 'publicapp.urls'
-
-TENANT_MODEL = "companies.Client"  # app.Model
-
-TENANT_DOMAIN_MODEL = "companies.Domain"  # app.Model
-
-REWRITE_STATIC_URLS = True
-AUTH_USER_MODEL ='users.CustomUser'
-
+AUTH_USER_MODEL = 'users.CustomUser'
 
 REST_FRAMEWORK = {
-    # ... other settings
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]

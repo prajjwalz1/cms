@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django_tenants.admin import TenantAdminMixin
 from django.db import models
-from companies.models import Client
+# from companies.models import Client
 from users.models import *
 from cms.mixins import *
 
@@ -31,7 +31,7 @@ class BrandModel(DateTimeModel):
 
 class SupplierModel(DateTimeModel):
     name = models.CharField(max_length=255, unique=True)
-    phone = models.DecimalField(decimal_places=2, max_digits=3, blank=True, null=True)
+    phone = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     street = models.CharField(max_length=255, blank=True, null=True)
@@ -115,7 +115,7 @@ class SiteModel(DateTimeModel):
 
 class GroupModel(DateTimeModel):
     name = models.CharField(max_length=255, unique=True)
-    site = models.ForeignKey(SiteModel, on_delete=models.DO_NOTHING)
+    site = models.ForeignKey(SiteModel,null=True,blank=True,on_delete=models.DO_NOTHING)
 
     def __str__(self) -> str:
         return self.name
