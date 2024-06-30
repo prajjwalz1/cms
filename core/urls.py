@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index),
     path('api/v1/',include('cms.urls')),
+    path('api/v1/workflow/',include('workflow.urls')),
     path('auth/',include('users.urls'))
 ]

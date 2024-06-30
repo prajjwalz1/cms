@@ -63,4 +63,12 @@ urlpatterns = [
         GroupDetailAPIView.as_view(),
         name="group_detail",
     ),
+
+     # -------------Project----------------------------
+    path("project/", ProjectView.as_view(), name="Project_list"),
+    path(
+        "project/<int:pk>/",
+        GroupDetailAPIView.as_view(),
+        name="group_detail",
+    ),
 ]

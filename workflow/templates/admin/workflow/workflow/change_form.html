@@ -1,0 +1,99 @@
+{% extends "admin/change_form.html" %}
+
+{% block admin_change_form_document_ready %}
+    {{ block.super }}
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const requestFromTypeField = document.getElementById('id_request_from_type');
+            const requestFromIdField = document.getElementById('id_request_from_id');
+            const requestDestTypeField = document.getElementById('id_request_dest_type');
+            const requestDestIdField = document.getElementById('id_request_dest_id');
+            const requestDestIdHiddenField = document.getElementById('id_request_dest_id_hidden');
+            const form = document.getElementById('workflow_form');  // Replace with actual form ID
+
+            // Function to create and append a new select field dynamically
+            function createNewField(fieldName, fieldId, options, hiddenField, label) {
+                // Create a container div for the new field
+                const fieldContainer = document.createElement('div');
+                fieldContainer.classList.add('new-field-container');  // Add a class for styling purposes
+
+                // Create a label for the new field
+                const fieldLabel = document.createElement('label');
+                fieldLabel.textContent = label;
+                fieldLabel.appendChild(document.createTextNode(' ')); // Add a space for better spacing
+                fieldContainer.appendChild(fieldLabel);
+
+                // Create a new select (dropdown) field
+                const selectField = document.createElement('select');
+                selectField.name = fieldName;  // Field name
+                selectField.id = fieldId;  // Field ID for Django
+
+                // Add options to the select field
+                options.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.id;
+                    optionElement.textContent = option.name;
+                    selectField.appendChild(optionElement);
+                });
+
+                // Optionally set placeholder attribute for the select field
+                selectField.placeholder = 'Select an option...';  // Example placeholder text
+
+                // Event listener for option selection
+                selectField.addEventListener('change', function() {
+                    const selectedId = this.value;  // Get the selected ID
+                    hiddenField.value = selectedId;  // Set the hidden field value
+                });
+
+                // Append the select field to the container
+                fieldContainer.appendChild(selectField);
+
+                // Append the container to the form
+                form.appendChild(fieldContainer);
+            }
+
+            function handleFieldChange(typeField, newFieldName, newFieldId, hiddenField, label) {
+                typeField.addEventListener('change', function() {
+                    const selectedModelName = typeField.options[typeField.selectedIndex].text;  // Get the selected model name
+
+                    // Fetch data based on selected model name
+                    fetch(`/api/v1/workflow/get_objects/?model=${encodeURIComponent(selectedModelName)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Fetched data:', data);  // Log fetched data to inspect in console
+
+                            // Clear existing new field if any
+                            const existingField = document.getElementById(newFieldId);
+                            if (existingField) {
+                                existingField.parentElement.remove();
+                            }
+
+                            // Create new field with fetched options
+                            createNewField(newFieldName, newFieldId, data, hiddenField, label);
+
+                            // Force update hidden field if there's only one option
+                            if (data.length === 1) {
+                                hiddenField.value = data[0].id;  // Update hidden field with the single option's ID
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching data:', error);
+                        });
+                });
+            }
+
+            // Add the new dropdowns for request from and destination
+            handleFieldChange(requestFromTypeField, 'new_request_from_id', 'id_new_request_from_id', requestFromIdField, 'Select From Option:');
+            handleFieldChange(requestDestTypeField, 'new_request_dest_id', 'id_new_request_dest_id', requestDestIdField, 'Select Destination Option:');
+
+            // Initial update of hidden field for destination ID
+            requestDestIdField.addEventListener('change', function() {
+                const selectedId = this.value;  // Get the selected ID
+                requestDestIdHiddenField.value = selectedId;  // Set the hidden field value
+            });
+            
+            // Trigger initial update
+            requestDestIdField.dispatchEvent(new Event('change'));
+        });
+    </script>
+{% endblock %}

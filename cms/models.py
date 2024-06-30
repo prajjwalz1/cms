@@ -4,6 +4,7 @@ from django.db import models
 # from companies.models import Client
 from users.models import *
 from cms.mixins import *
+from django.utils.translation import gettext_lazy as _
 
 
 # @admin.register(Client)
@@ -31,7 +32,7 @@ class BrandModel(DateTimeModel):
 
 class SupplierModel(DateTimeModel):
     name = models.CharField(max_length=255, unique=True)
-    phone = models.CharField(max_length=100,null=False,blank=False)
+    phone = models.CharField(max_length=100,null=False,blank=False,default="980000000")
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     street = models.CharField(max_length=255, blank=True, null=True)
@@ -53,8 +54,13 @@ class WarehouseModel(DateTimeModel):
     def __str__(self) -> str:
         return self.name
 
+class ItemUnit(models.Model):
+    unit=models.CharField(max_length=255,null=False,blank=False)
 
-class ProductModel(DateTimeModel):
+    def __str__(self) -> str:
+        return self.unit
+
+class ItemModel(DateTimeModel):
     PRODUCT_TYPE_CHOICES = (
         ("Machinery", "Machinery"),
         ("Equipments", "Equipments"),
@@ -62,20 +68,20 @@ class ProductModel(DateTimeModel):
         ("ConstructionMaterials", "Construction Materials"),
     )
 
-    name = models.CharField(max_length=255)
-    category = models.ForeignKey(CategoryModel, on_delete=models.DO_NOTHING)
-    type = models.CharField(max_length=255, choices=PRODUCT_TYPE_CHOICES)
+    name = models.CharField(max_length=255,null=False,blank=False,default="test")
+    unit=models.ForeignKey(ItemUnit,on_delete=models.SET_NULL,null=True,blank=False)
+    category = models.ForeignKey(CategoryModel, on_delete=models.DO_NOTHING,null=False,blank=False,default="test")
+    type = models.CharField(max_length=255, choices=PRODUCT_TYPE_CHOICES,null=False,blank=False,default="test")
     brand = models.ForeignKey(
         BrandModel, on_delete=models.DO_NOTHING, blank=True, null=True
     )
     warehouse = models.ForeignKey(
-        WarehouseModel, on_delete=models.DO_NOTHING, blank=True, null=True
-    )
+        WarehouseModel, on_delete=models.DO_NOTHING, null=False,blank=False,default=1)
     tax = models.DecimalField(decimal_places=2, max_digits=3, blank=True, null=True)
     image = models.ImageField(upload_to="product/", blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.name
+        return self.name + " "+'('+self.unit.unit+")"
 
 
 class VehicleModel(DateTimeModel):
@@ -89,10 +95,33 @@ class VehicleModel(DateTimeModel):
         CustomUser, on_delete=models.DO_NOTHING, blank=True, null=True
     )
     image = models.ImageField(upload_to="vehicle/", blank=True, null=True)
+    current_meter=models.IntegerField(null=False,blank=False,default=0)
+    last_service_date=models.DateField(null=True,blank=True)
+    
+    def __str__(self) -> str:
+        return self.vehicle_number
+
+
+class VehicleWorkLogs(DateTimeModel):
+    vehicle=models.ForeignKey(VehicleModel,on_delete=models.SET_NULL,null=True,blank=True)
+    travel_details=models.TextField(null=True,blank=True)
+    distance_travelled = models.IntegerField(_("Distance Travelled in KM"), null=False, blank=False)
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.vehicle.vehicle_number}travelled {self.distance_travelled}"
 
+
+class Project(DateTimeModel):
+    project_name=models.CharField(max_length=255,null=False,blank=False)
+    project_estimation_cost=models.FloatField(null=True,blank=True)
+    project_location=models.CharField(null=True,blank=True)
+    project_start_date=models.DateField(null=True,blank=True)
+    project_dead_line=models.DateField(null=True,blank=True)
+    project_progress=models.CharField(max_length=255,null=True,blank=True)
+    project_manager=models.ForeignKey(CustomUser,on_delete=models.DO_NOTHING, null=True,blank=True)
+
+    def __str__(self) -> str:
+        return self.project_name
 
 class SiteModel(DateTimeModel):
     name = models.CharField(max_length=255)
@@ -105,9 +134,7 @@ class SiteModel(DateTimeModel):
     contact_person = models.ForeignKey(
         CustomUser, on_delete=models.DO_NOTHING, blank=True, null=True
     )
-    budget_allocation = models.DecimalField(
-        decimal_places=2, max_digits=3, blank=True, null=True
-    )
+    project=models.ForeignKey(Project,on_delete=models.SET_NULL,null=True,blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -119,3 +146,5 @@ class GroupModel(DateTimeModel):
 
     def __str__(self) -> str:
         return self.name
+
+

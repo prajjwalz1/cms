@@ -34,19 +34,19 @@ class WarehouseModelSerializer(serializers.ModelSerializer):
 
 
 # ------------------- PRODUCT-------------------------
-class ProductModelSerializer(serializers.ModelSerializer):
+class ItemModelSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=CategoryModel.objects.all())
 
     class Meta:
-        model = ProductModel
+        model = ItemModel
         fields = "__all__"
 
 
-class ProductModel_SelectRelated_Serializer(serializers.ModelSerializer):
+class ItemModel_SelectRelated_Serializer(serializers.ModelSerializer):
     category = CategoryModelSerializer()
 
     class Meta:
-        model = ProductModel
+        model = ItemModel
         fields = "__all__"
 
 
@@ -60,7 +60,7 @@ class VehicleModelSerializer(serializers.ModelSerializer):
 
 
 class VehicleModel_SelectRelated_Serializer(serializers.ModelSerializer):
-    contact_person = UserModelSerializer()
+    contact_person = serializers.CharField(source="contact_person.username")
 
     class Meta:
         model = VehicleModel
@@ -69,7 +69,6 @@ class VehicleModel_SelectRelated_Serializer(serializers.ModelSerializer):
 
 # ------------------- SITE -------------------------
 class SiteModelSerializer(serializers.ModelSerializer):
-    contact_person = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
     class Meta:
         model = SiteModel
@@ -77,7 +76,7 @@ class SiteModelSerializer(serializers.ModelSerializer):
 
 
 class SiteModel_SelectRelated_Serializer(serializers.ModelSerializer):
-    contact_person = UserModelSerializer()
+    contact_person = serializers.CharField(source="contact_person.username")
 
     class Meta:
         model = SiteModel
@@ -86,8 +85,6 @@ class SiteModel_SelectRelated_Serializer(serializers.ModelSerializer):
 
 # ------------------- GROUP -------------------------
 class GroupModelSerializer(serializers.ModelSerializer):
-    site = serializers.PrimaryKeyRelatedField(queryset=SiteModel.objects.all())
-
     class Meta:
         model = GroupModel
         fields = "__all__"
@@ -99,3 +96,16 @@ class GroupModel_SelectRelated_Serializer(serializers.ModelSerializer):
     class Meta:
         model = GroupModel
         fields = "__all__"
+
+        # ------------------- project -------------------------
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = "__all__"
+
+
+class project_SelectRelated_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = "__all__"
+

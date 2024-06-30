@@ -455,11 +455,12 @@ class VehicleDetailAPIView(ResponseMixin, GetSingleObjectMixin, APIView):
         vehicle, vehicle_error = self.get_object(VehicleModel, pk)
         if not vehicle:
             return self.handle_error_response(vehicle_error, status.HTTP_404_NOT_FOUND)
+        print(vehicle,"vehicle")
         serializer = VehicleModel_SelectRelated_Serializer(vehicle)
         return self.handle_success_response(
             status.HTTP_200_OK,
             serialized_data=serializer.data,
-        )
+        ) 
 
     def patch(self, request, pk):
         vehicle, vehicle_error = self.get_object(VehicleModel, pk)
@@ -638,6 +639,82 @@ class GroupDetailAPIView(ResponseMixin, GetSingleObjectMixin, APIView):
         if not group:
             return self.handle_error_response(group_error, status.HTTP_404_NOT_FOUND)
         group.delete()
+        return self.handle_success_response(
+            status.HTTP_204_NO_CONTENT,
+            message="Successfully deleted Group",
+        )
+
+
+class ProjectView(APIView,ResponseMixin):
+    pagination_class = PageNumberPagination
+
+    def get(self, request):
+        try:
+            paginator = self.pagination_class()
+            qs = Project.objects.all()
+            print(qs)
+            paginated_group = paginator.paginate_queryset(qs, request)
+            print(paginated_group)
+            serializer = project_SelectRelated_Serializer(paginated_group, many=True)
+            return self.handle_success_response(
+                status.HTTP_200_OK, serialized_data=serializer.data
+            )
+        except Exception as e:
+            return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        serializer = ProjectSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return self.handle_success_response(
+                status.HTTP_201_CREATED,
+                serialized_data=serializer.data,
+                message="Successfully Created Group",
+            )
+        except ValidationError as e:
+            error_detail = e.detail
+            error_detail.update({"success": False})
+            raise e
+        except Exception as e:
+            return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
+        
+class ProjectDetailAPIView(ResponseMixin, GetSingleObjectMixin, APIView):
+    def get(self, request, pk):
+        project, project_error = self.get_object(Project, pk)
+        if not project:
+            return self.handle_error_response(project_error, status.HTTP_404_NOT_FOUND)
+        serializer = project_SelectRelated_Serializer(project)
+        return self.handle_success_response(
+            status.HTTP_200_OK,
+            serialized_data=serializer.data,
+        )
+
+    def patch(self, request, pk):
+        project, project_error = self.get_object(Project, pk)
+        if not project:
+            return self.handle_error_response(project_error, status.HTTP_404_NOT_FOUND)
+        serializer = ProjectSerializer(project, data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return self.handle_success_response(
+                status.HTTP_200_OK,
+                serialized_data=serializer.data,
+                message="Successfully updated Group",
+            )
+        except ValidationError as e:
+            error_detail = e.detail
+            error_detail.update({"success": False})
+            raise e
+        except Exception as e:
+            return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        project, project_error = self.get_object(Project, pk)
+        if not project:
+            return self.handle_error_response(project_error, status.HTTP_404_NOT_FOUND)
+        project.delete()
         return self.handle_success_response(
             status.HTTP_204_NO_CONTENT,
             message="Successfully deleted Group",
