@@ -140,10 +140,18 @@ class SiteModel(DateTimeModel):
     def __str__(self) -> str:
         return self.name
 
-
+class Manpower(models.Model):
+    name=models.CharField(max_length=255,null=True,blank=True)
+    manpower_type=models.CharField(choices=(('skilled','skilled'),('semi-skilled','semi-skilled'),('un-skilled','un-skilled')))
+    paymode=models.CharField(choices=(('daily-wages','daily-wages'),('salaried','salaried'),('contract','contract')))
+    amount=models.FloatField(null=False,blank=False)
+    def __str__(self) -> str:
+        return self.name
+    
 class GroupModel(DateTimeModel):
     name = models.CharField(max_length=255, unique=True)
     site = models.ForeignKey(SiteModel,null=True,blank=True,on_delete=models.DO_NOTHING)
+    manpower=models.ManyToManyField(Manpower)
 
     def __str__(self) -> str:
         return self.name
