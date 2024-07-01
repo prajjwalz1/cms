@@ -105,6 +105,7 @@ class VehicleModel(DateTimeModel):
 class VehicleWorkLogs(DateTimeModel):
     vehicle=models.ForeignKey(VehicleModel,on_delete=models.SET_NULL,null=True,blank=True)
     travel_details=models.TextField(null=True,blank=True)
+    worklog_updated=models.DateField(auto_now=True)
     distance_travelled = models.IntegerField(_("Distance Travelled in KM"), null=False, blank=False)
 
     def __str__(self) -> str:
