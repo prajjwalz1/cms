@@ -45,10 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'corsheaders',
-    # 'companies',
-    # 'publicapp',
     'cms',
-    'workflow'
+    'workflow',
+    'inventory'
+    
     
 ]
 

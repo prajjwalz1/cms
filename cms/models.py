@@ -75,8 +75,8 @@ class ItemModel(DateTimeModel):
     brand = models.ForeignKey(
         BrandModel, on_delete=models.DO_NOTHING, blank=True, null=True
     )
-    warehouse = models.ForeignKey(
-        WarehouseModel, on_delete=models.DO_NOTHING, null=False,blank=False,default=1)
+    # warehouse = models.ForeignKey(
+    #     WarehouseModel, on_delete=models.DO_NOTHING, null=False,blank=False,default=1)
     tax = models.DecimalField(decimal_places=2, max_digits=3, blank=True, null=True)
     image = models.ImageField(upload_to="product/", blank=True, null=True)
 
