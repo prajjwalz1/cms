@@ -6,5 +6,6 @@ from .views import *
 urlpatterns = [
     path("request/", WorkflowRequest.as_view(), name="WorkflowRequest"),
     path('get_objects/', get_objects, name='get_objects'),
-    path('workflowrequest/', WorkflowRequest.as_view(), name='WorkflowRequest')
+    path('workflowrequest/', WorkflowRequest.as_view(), name='WorkflowRequest'),
+    path('getcontenttype/', ContentTypeListView.as_view(), name='ContentTypeListView')
 ]

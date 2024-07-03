@@ -343,9 +343,9 @@ class ProductAPIView(ResponseMixin, APIView):
     def get(self, request):
         try:
             paginator = self.pagination_class()
-            product = ProductModel.objects.all()
+            product = ItemModel.objects.all()
             paginated_product = paginator.paginate_queryset(product, request)
-            serializer = ProductModel_SelectRelated_Serializer(
+            serializer = ItemModel_SelectRelated_Serializer(
                 paginated_product, many=True
             )
             return self.handle_success_response(
@@ -355,7 +355,7 @@ class ProductAPIView(ResponseMixin, APIView):
             return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        serializer = ProductModelSerializer(data=request.data)
+        serializer = ItemModelSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -374,20 +374,20 @@ class ProductAPIView(ResponseMixin, APIView):
 
 class ProductDetailAPIView(ResponseMixin, GetSingleObjectMixin, APIView):
     def get(self, request, pk):
-        product, product_error = self.get_object(ProductModel, pk)
+        product, product_error = self.get_object(ItemModel, pk)
         if not product:
             return self.handle_error_response(product_error, status.HTTP_404_NOT_FOUND)
-        serializer = ProductModel_SelectRelated_Serializer(product)
+        serializer = ItemModel_SelectRelated_Serializer(product)
         return self.handle_success_response(
             status.HTTP_200_OK,
             serialized_data=serializer.data,
         )
 
     def patch(self, request, pk):
-        product, product_error = self.get_object(ProductModel, pk)
+        product, product_error = self.get_object(ItemModel, pk)
         if not product:
             return self.handle_error_response(product_error, status.HTTP_404_NOT_FOUND)
-        serializer = ProductModelSerializer(product, data=request.data)
+        serializer = ItemModelSerializer(product, data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -404,7 +404,7 @@ class ProductDetailAPIView(ResponseMixin, GetSingleObjectMixin, APIView):
             return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        product, product_error = self.get_object(ProductModel, pk)
+        product, product_error = self.get_object(ItemModel, pk)
         if not product:
             return self.handle_error_response(product_error, status.HTTP_404_NOT_FOUND)
         product.delete()

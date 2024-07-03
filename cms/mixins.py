@@ -35,6 +35,14 @@ class ResponseMixin:
             {"success": False, "error": str(error_message)},
             status=status_code,
         )
+    
+    def handle_serializererror_response(self,status_code,**error_messages,):
+        print(error_messages)
+        return Response(
+                {"success": False, "errors": error_messages},
+                status=status_code,
+            )
+
 
     def handle_success_response(self, status_code, serialized_data=None, message=None):
         response = {"success": True}

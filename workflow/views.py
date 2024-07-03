@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from cms.mixins import *
+from cms.mixins import ResponseMixin
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -8,27 +8,54 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import ValidationError
 from .models import *
 from .serializers import *
-def BadRequestResponse(*args, **kwargs):
-    return Response({"success":False,"message":f'request {kwargs.get("request_type")} is not valid'},status=status.HTTP_400_BAD_REQUEST)
+from cms.serializers import *
+def BadRequestResponse(request_type, *args, **kwargs):
+    print(args)
+    return Response({"success": False, "message": f'request {request_type} is not valid'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class WorkflowRequest(ResponseMixin,APIView):
-    pagination_class=PageNumberPagination
-    def post(self,request):
-        request_type=request.GET.get("request")
-        if request_type=="request_transport":
-            return self.TransportRequest(request)
-        else:
-            return BadRequestResponse({"request_type":request_type})
+class ContentTypeListView(APIView):
+    allowed_models = ["sitemodel", "warehousemodel"]
+
+    def get(self, request):
+        content_types = ContentType.objects.filter(model__in=self.allowed_models)
+        content_types_data = []
+
+        for ct in content_types:
+            model_class = ct.model_class()
+            if model_class:
+                instances = model_class.objects.all()
+                instances_data = [{"id": instance.id, "name": str(instance)} for instance in instances]
+                content_types_data.append({
+                    "app_label": ct.app_label,
+                    "model": ct.model,
+                    "id": ct.id,
+                    "instances": instances_data
+                })
+        items=ItemModel.objects.all()
+        item_serialzer=ItemModelSerializer(items,many=True)
+
+        return Response({"success": True,"items":item_serialzer.data, "content_types": content_types_data}, status=status.HTTP_200_OK)
+
+class WorkflowRequest(ResponseMixin, APIView):
+    pagination_class = PageNumberPagination
+
+    def post(self, request):
+        request_type = request.GET.get("request")
+        print(request_type)
         
-    def MachineryRequest(request):
-        request_from=request.data.get("from")
-        request_dest=request.data.get("request_dest")
-        request_item=request.data.get("request_item")
-        from_date=request.data.get("from_date")
-        to_date=request.data.get("to_date")
-        purpose=request.data.get("purpose")
-        purpose=request.data.get("project")
+        if request_type == "create_workflow":
+            return self.CreateWorkflowRequest(request)
+        else:
+            return BadRequestResponse(request_type)
+        
+    def CreateWorkflowRequest(self,request):
+        serializer=RequestWorkflowSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
+        else:
+             return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
 
     def VehicleRequest(request):
         request_from=request.data.get("from")

@@ -6,9 +6,11 @@ from django.apps import apps
 
 # Get all models from the current app
 from .models import *
-# Convert the models to a list
 
 
+from django import forms
+from django.contrib.admin import ModelAdmin
+from .models import Workflow
 
 class WorkflowAdminForm(forms.ModelForm):
     class Meta:
@@ -29,6 +31,14 @@ class WorkflowAdminForm(forms.ModelForm):
             model__in=[model._meta.model_name for model in allowed_models]
         )
         self.fields['request_dest_type'].label_from_instance = lambda obj: obj.model
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        if self.instance.status == 'completed' and status != 'completed':
+            raise forms.ValidationError("Cannot change status from 'completed' to another status.")
+        return cleaned_data
 
 class WorkflowAdmin(admin.ModelAdmin):
     form = WorkflowAdminForm

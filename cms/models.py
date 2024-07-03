@@ -81,7 +81,7 @@ class ItemModel(DateTimeModel):
     image = models.ImageField(upload_to="product/", blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.name + " "+'('+self.unit.unit+")"
+        return self.name + " "+'('+self.unit.unit+")" if self.unit else self.name
 
 
 class VehicleModel(DateTimeModel):

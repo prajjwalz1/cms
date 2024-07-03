@@ -4,11 +4,12 @@ from .models import *
 class WorkflowSerializer(serializers.ModelSerializer):
     request_from_type = serializers.CharField(source='request_from_type.model')
     request_dest_type = serializers.CharField(source='request_dest_type.model', allow_null=True)
-
+    request_item = serializers.CharField(source='request_item.name', allow_null=True)
+    request_item_unit = serializers.CharField(source='request_item.unit', allow_null=True,)
 
     class Meta:
         model = Workflow
-        fields = ['id','request_item', 'request_from_type', 'request_dest_type','status']
+        fields = ['id','request_item','request_quantity','request_item_unit', 'request_from_type', 'request_dest_type','status']
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -26,3 +27,9 @@ class WorkflowSerializer(serializers.ModelSerializer):
             ret['request_dest'] = None
         
         return ret
+
+
+class RequestWorkflowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Workflow
+        fields="__all__"
