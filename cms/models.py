@@ -97,7 +97,7 @@ class VehicleModel(DateTimeModel):
     last_service_date=models.DateField(null=True,blank=True)
     
     def __str__(self) -> str:
-        return self.vehicle_number if self.vehicle_number else None
+        return self.vehicle_number if self.vehicle_number else "None"
 
 class VehicleWorkLogs(DateTimeModel):
     vehicle=models.ForeignKey(VehicleModel,on_delete=models.SET_NULL,null=True,blank=True)
@@ -106,7 +106,7 @@ class VehicleWorkLogs(DateTimeModel):
     distance_travelled = models.IntegerField(_("Distance Travelled in KM"), null=False, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.vehicle.vehicle_number}travelled {self.distance_travelled}" if self.vehicle else None
+        return f"{self.vehicle.vehicle_number}travelled {self.distance_travelled}" if self.vehicle else "None"
 
 class VehicleParts(DateTimeModel):
     part_types_choices=(('durable','durable'),('non-durable',('non-durable')))
