@@ -106,7 +106,7 @@ class VehicleWorkLogs(DateTimeModel):
     distance_travelled = models.IntegerField(_("Distance Travelled in KM"), null=False, blank=False)
 
     def __str__(self) -> str:
-        return f"{self.vehicle.vehicle_number}travelled {self.distance_travelled}"
+        return f"{self.vehicle.vehicle_number}travelled {self.distance_travelled}" if self.vehicle else None
 
 class VehicleParts(DateTimeModel):
     part_types_choices=(('durable','durable'),('non-durable',('non-durable')))
