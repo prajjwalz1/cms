@@ -79,7 +79,7 @@ class ItemModel(DateTimeModel):
     #     WarehouseModel, on_delete=models.DO_NOTHING, null=False,blank=False,default=1)
     tax = models.DecimalField(decimal_places=2, max_digits=3, blank=True, null=True)
     image = models.ImageField(upload_to="product/", blank=True, null=True)
-
+    stock_alert=models.IntegerField(default=100)
     def __str__(self) -> str:
         return self.name + " "+'('+self.unit.unit+")" if self.unit else self.name
 

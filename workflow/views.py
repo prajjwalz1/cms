@@ -9,6 +9,8 @@ from rest_framework.exceptions import ValidationError
 from .models import *
 from .serializers import *
 from cms.serializers import *
+from django.http import JsonResponse
+
 def BadRequestResponse(request_type, *args, **kwargs):
     print(args)
     return Response({"success": False, "message": f'request {request_type} is not valid'}, status=status.HTTP_400_BAD_REQUEST)
@@ -78,11 +80,6 @@ class WorkflowRequest(ResponseMixin, APIView):
         except Exception as e:
             return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
 
-
-
-
-from django.http import JsonResponse
-from .models import SiteModel, WarehouseModel, SupplierModel
 
 def get_objects(request):
     model = request.GET.get('model')

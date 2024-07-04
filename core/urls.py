@@ -22,5 +22,6 @@ urlpatterns = [
     path('', index),
     path('api/v1/',include('cms.urls')),
     path('api/v1/workflow/',include('workflow.urls')),
-    path('auth/',include('users.urls'))
+    path('auth/',include('users.urls')),
+    path('api/v1/inventory/',include('inventory.urls'))
 ]
