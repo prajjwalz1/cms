@@ -83,14 +83,12 @@ class ItemModel(DateTimeModel):
     def __str__(self) -> str:
         return self.name + " "+'('+self.unit.unit+")" if self.unit else self.name
 
+class VehicleType(DateTimeModel):
+    name=models.CharField(max_length=255,null=True,blank=True)
 
 class VehicleModel(DateTimeModel):
-    VEHICLE_TYPE_CHOICES = (
-        ("Truck", "Truck"),
-        ("Jeep", "Jeep"),
-    )
     vehicle_number = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, choices=VEHICLE_TYPE_CHOICES)
+    type = models.ForeignKey(VehicleType, verbose_name=_("vehicle"), on_delete=models.DO_NOTHING)
     contact_person = models.ForeignKey(
         CustomUser, on_delete=models.DO_NOTHING, blank=True, null=True
     )
@@ -99,8 +97,7 @@ class VehicleModel(DateTimeModel):
     last_service_date=models.DateField(null=True,blank=True)
     
     def __str__(self) -> str:
-        return self.vehicle_number
-
+        return self.vehicle_number if self.vehicle_number else None
 
 class VehicleWorkLogs(DateTimeModel):
     vehicle=models.ForeignKey(VehicleModel,on_delete=models.SET_NULL,null=True,blank=True)
@@ -111,6 +108,34 @@ class VehicleWorkLogs(DateTimeModel):
     def __str__(self) -> str:
         return f"{self.vehicle.vehicle_number}travelled {self.distance_travelled}"
 
+class VehicleParts(DateTimeModel):
+    part_types_choices=(('durable','durable'),('non-durable',('non-durable')))
+    parts_name=models.CharField(max_length=255)
+    parts_materials_type=models.CharField(choices=part_types_choices)
+    parts_quality_type=models.CharField(choices=(('genuine','genuine'),('local','local')))
+    parts_price=models.FloatField(null=True,blank=True)
+    parts_image=models.ImageField(null=True,blank=True)
+
+    def __str__(self) -> str:
+        return self.parts_name
+
+
+class VehicleServiceLogs(DateTimeModel):
+    vehicle=models.ForeignKey(VehicleModel,on_delete=models.SET_NULL,null=True,blank=True)
+    service_type=models.CharField(choices=(('servicing','servicing'),('parts_replace','parts_replace'),))
+    replace_parts=models.ManyToManyField(VehicleParts,through='partsreplacedetails')
+    quatation=models.FileField(upload_to='static/documents/repair/quatations')
+    minimium_quation_amount=models.FloatField(null=False,blank=False)
+    def __str__(self) -> str:
+        return f"{self.vehicle.vehicle_number}travelled {self.distance_travelled}"
+
+class PartsReplaceDetails(DateTimeModel):
+    service_log=models.ForeignKey(VehicleServiceLogs,null=True,blank=True,on_delete=models.SET_NULL)
+    replace_parts=models.ForeignKey(VehicleParts,null=False,blank=False,on_delete=models.DO_NOTHING)
+    replace_date=models.DateField(auto_now=True)
+    def __str__(self) -> str:
+        return self.replace_date
+    
 
 class Project(DateTimeModel):
     project_name=models.CharField(max_length=255,null=False,blank=False)
@@ -123,7 +148,16 @@ class Project(DateTimeModel):
 
     def __str__(self) -> str:
         return self.project_name
+    
+class Document(models.Model):
+    project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
+    document_name = models.CharField(max_length=255)
+    document_file = models.FileField(upload_to="static/documents/files", null=True,blank=True)
+    document_image = models.ImageField(upload_to='static/documents/image',null=True,blank=True)
 
+    def __str__(self):
+        return self.document_name
+    
 class SiteModel(DateTimeModel):
     name = models.CharField(max_length=255)
     city = models.CharField(max_length=255, blank=True, null=True)

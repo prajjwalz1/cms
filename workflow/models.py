@@ -15,6 +15,9 @@ class Workflow(models.Model):
     status = models.CharField(choices=(('pending', 'pending'), ('approved', 'approved'), ('completed', 'completed')), default='pending')
     request_item = models.ForeignKey(ItemModel, on_delete=models.SET_NULL, null=True, blank=True)
     request_quantity = models.FloatField(null=True, blank=True)
+    bill_image=models.ImageField(upload_to='static/bills',null=True,blank=True)
+    bill_amount=models.FloatField(null=True,blank=True)
+    purchase_type=models.CharField(choices=(('cash','cash'),('cheque','cheque'),('credit','credit'),('mobile-banking','mobile-banking')),null=True,blank=True)
 
     def __str__(self):
         if self.request_from and self.request_dest:
@@ -26,4 +29,4 @@ class Workflow(models.Model):
             previous = Workflow.objects.get(pk=self.pk)
             if previous.status == 'completed' and self.status != 'completed':
                 raise ValueError("Cannot change status from 'completed' to another status")
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)        
