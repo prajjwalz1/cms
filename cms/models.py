@@ -87,8 +87,8 @@ class VehicleType(DateTimeModel):
     name=models.CharField(max_length=255,null=True,blank=True)
 
 class VehicleModel(DateTimeModel):
-    vehicle_number = models.CharField(max_length=255)
     type = models.ForeignKey(VehicleType, verbose_name=_("vehicle"), on_delete=models.DO_NOTHING)
+    vehicle_number = models.CharField(max_length=255)
     contact_person = models.ForeignKey(
         CustomUser, on_delete=models.DO_NOTHING, blank=True, null=True
     )
@@ -176,9 +176,10 @@ class SiteModel(DateTimeModel):
 
 class Manpower(models.Model):
     name=models.CharField(max_length=255,null=True,blank=True)
+    position=models.CharField(max_length=255,null=True,blank=True)
     manpower_type=models.CharField(choices=(('skilled','skilled'),('semi-skilled','semi-skilled'),('un-skilled','un-skilled')))
     paymode=models.CharField(choices=(('daily-wages','daily-wages'),('salaried','salaried'),('contract','contract')))
-    amount=models.FloatField(null=False,blank=False)
+    salary_amount=models.DecimalField(max_digits=10, decimal_places=2)
     def __str__(self) -> str:
         return self.name
     

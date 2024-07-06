@@ -17,7 +17,7 @@ def BadRequestResponse(request_type, *args, **kwargs):
 
 
 class ContentTypeListView(APIView):
-    allowed_models = ["sitemodel", "warehousemodel"]
+    allowed_models = ["sitemodel", "warehousemodel","suppliermodel"]
 
     def get(self, request):
         content_types = ContentType.objects.filter(model__in=self.allowed_models)
@@ -44,7 +44,6 @@ class WorkflowRequest(ResponseMixin, APIView):
 
     def post(self, request):
         request_type = request.GET.get("request")
-        print(request_type)
         
         if request_type == "create_workflow":
             return self.CreateWorkflowRequest(request)
@@ -97,3 +96,5 @@ def get_objects(request):
     json_data = list(objects)
     print(json_data)
     return JsonResponse(list(objects), safe=False)
+
+

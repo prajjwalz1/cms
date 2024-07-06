@@ -9,7 +9,7 @@ class WorkflowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workflow
-        fields = ['id','request_item','request_quantity','request_item_unit', 'request_from_type', 'request_dest_type','status']
+        fields = ['id','request_item','request_quantity','request_item_unit', 'request_from_type', 'request_dest_type','status','bill_image','bill_amount','purchase_type']
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -31,5 +31,30 @@ class WorkflowSerializer(serializers.ModelSerializer):
 
 class RequestWorkflowSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Workflow
-        fields="__all__"
+        model = Workflow
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        ret= super().to_representation(instance)
+        request_from_model=instance.request_from_type.model
+        print(request_from_model)
+        if request_from_model:
+            ret['request_from_type']=str(request_from_model)
+        return ret
+
+    def validate(self, data):
+        # Call the default model validation
+        data = super().validate(data)
+        request_from_type = data.get('request_from_type')
+        
+        if request_from_type and request_from_type.model == 'suppliermodel':
+            if not data.get('bill_image'):
+                raise serializers.ValidationError({'bill_image': 'This field is required when request_from_type is supplier.'})
+            if not data.get('bill_amount'):
+                raise serializers.ValidationError({'bill_amount': 'This field is required when request_from_type is supplier.'})
+            if not data.get('purchase_type'):
+                raise serializers.ValidationError({'purchase_type': 'This field is required when request_from_type is supplier.'})
+
+        # Return the validated data
+        return data
+    

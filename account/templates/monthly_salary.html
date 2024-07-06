@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salary Slip for {{ month }} {{ year }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 40px;
+            position: relative;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        td {
+            color: #555;
+        }
+        .no-data {
+            text-align: center;
+            color: #999;
+            font-size: 18px;
+            padding: 20px 0;
+        }
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+        .signature {
+            width: 45%;
+        }
+        .signature div {
+            border-top: 1px solid #000;
+            text-align: center;
+            padding-top: 5px;
+            margin-top: 60px; /* space for the signature */
+        }
+        .signature-title {
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Company Name</h1>
+        <h2>Salary Slip for {{ month }} {{ year }}</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Employee Type</th>
+                    <th>Position</th>
+                    <th>Payment Mode</th>
+                    <th>Paying Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if salary_slip %}
+                    <tr>
+                        <td>{{ salary_slip.employee.name }}</td>
+                        <td>{{ salary_slip.employee.employee_type }}</td>
+                        <td>{{ salary_slip.employee.position }}</td>
+                        <td>{{ salary_slip.payment_mode }}</td>
+                        <td>{{ salary_slip.paying_amount }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="no-data">No salary slip found for the given month and year.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <div class="signatures">
+            <div class="signature">
+                <div>Approved by</div>
+                <div class="signature-title">Signature</div>
+            </div>
+            <div class="signature">
+                <div>Prepared by</div>
+                <div class="signature-title">Signature</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

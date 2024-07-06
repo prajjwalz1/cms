@@ -21,7 +21,7 @@ class Workflow(models.Model):
 
     def __str__(self):
         if self.request_from and self.request_dest:
-            return f"{self.request_quantity} * {self.request_item} from {self.request_from.name} to {self.request_dest.name}"
+            return f"{self.request_quantity} * {self.request_item} from {self.request_from.name} to {self.request_dest.name}" if self.request_from_type.model and self.request_dest_type.model in ["suppliermodel","warehousemodel","sitemodel"] else "None"
         return "Unknown"
 
     def save(self, *args, **kwargs):
@@ -30,3 +30,22 @@ class Workflow(models.Model):
             if previous.status == 'completed' and self.status != 'completed':
                 raise ValueError("Cannot change status from 'completed' to another status")
         super().save(*args, **kwargs)        
+
+
+
+
+class FuelWorkflow(DateTimeModel):
+    vehicle=models.ForeignKey(VehicleModel,on_delete=models.SET_NULL,null=True,blank=True)
+    remaining_fuel = models.DecimalField(max_digits=10, decimal_places=2)
+    request_fuel = models.DecimalField(max_digits=10, decimal_places=2)
+    purpose = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(
+        max_length=10,
+        choices=(
+            ('pending', 'Pending'),
+            ('approved', 'Approved'),
+            ('completed', 'completed')
+        ),
+        default='pending'
+    )
+
