@@ -76,7 +76,7 @@ class SiteModelSerializer(serializers.ModelSerializer):
 
 
 class SiteModel_SelectRelated_Serializer(serializers.ModelSerializer):
-    contact_person = serializers.CharField(source="contact_person.username")
+    contact_person = serializers.CharField(source="contact_person.contact",allow_null=True)
 
     class Meta:
         model = SiteModel

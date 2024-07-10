@@ -66,11 +66,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
-
+print(BASE_DIR)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'core'),  # Add this line
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,7 +84,7 @@ TEMPLATES = [
         },
     },
 ]
-
+print(TEMPLATES[0]['DIRS'])
 WSGI_APPLICATION = 'core.wsgi.application'
 
 

@@ -1,0 +1,136 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Inventory Information{% endblock %}
+
+{% block content %}
+    <h1>Inventory Information</h1>
+    <div class="container" id="inventory-container">
+        <!-- Site Information and Warehouse Information will be inserted here -->
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/your_endpoint/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderInventory(data.data);
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        function renderInventory(data) {
+            const container = document.getElementById('inventory-container');
+            container.innerHTML = '';
+
+            // Render site information
+            data.site_stock.forEach(siteData => {
+                const siteCard = document.createElement('div');
+                siteCard.className = 'card';
+                siteCard.innerHTML = `
+                    <h2>${siteData.site.name}</h2>
+                    <p>Last updated: ${new Date(siteData.site.last_modified).toLocaleDateString()}</p>
+                    <table>
+                        <tr>
+                            <th>Materials</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                        </tr>
+                        ${siteData.items.map(item => `
+                        <tr>
+                            <td>${item.item}</td>
+                            <td>${item.quantity} ${item.item_unit}</td>
+                            <td class="${item.low_status ? 'low-stock' : ''}">${item.low_status ? 'Low Stock' : 'In Stock'}</td>
+                        </tr>`).join('')}
+                    </table>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 70%; background-color: green;">70%</div>
+                    </div>
+                `;
+                container.appendChild(siteCard);
+            });
+
+            // Render warehouse information
+            data.warehouse_stock.forEach(warehouseData => {
+                const warehouseCard = document.createElement('div');
+                warehouseCard.className = 'card';
+                warehouseCard.innerHTML = `
+                    <h2>${warehouseData.warehouse ? warehouseData.warehouse.name : 'Warehouse'}</h2>
+                    <p>Last updated: ${new Date(warehouseData.last_modified).toLocaleDateString()}</p>
+                    <table>
+                        <tr>
+                            <th>Materials</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                        </tr>
+                        ${warehouseData.items.map(item => `
+                        <tr>
+                            <td>${item.item}</td>
+                            <td>${item.quantity} ${item.item_unit}</td>
+                            <td class="${item.low_status ? 'low-stock' : ''}">${item.low_status ? 'Low Stock' : 'In Stock'}</td>
+                        </tr>`).join('')}
+                    </table>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 30%; background-color: red;">30%</div>
+                    </div>
+                `;
+                container.appendChild(warehouseCard);
+            });
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 20px;
+            padding: 20px;
+            width: 45%;
+        }
+        .card h2 {
+            margin-top: 0;
+        }
+        .card table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .card table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .low-stock {
+            color: red;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 20px;
+        }
+        .progress {
+            height: 100%;
+            text-align: center;
+            color: white;
+            border-radius: 10px;
+        }
+    </style>
+{% endblock %}
