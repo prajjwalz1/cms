@@ -13,7 +13,7 @@ from django.contrib.admin import ModelAdmin
 from .models import Workflow
 
 
-admin.site.register(FuelWorkflow)
+
 class WorkflowAdminForm(forms.ModelForm):
     class Meta:
         model = Workflow
@@ -59,3 +59,9 @@ class WorkflowAdmin(admin.ModelAdmin):
     change_form_template = 'admin/workflow/workflow/change_form.html'
 
 admin.site.register(Workflow, WorkflowAdmin)
+
+
+@admin.register(FuelWorkflow)
+class FuelWorkflowAdmin(admin.ModelAdmin):
+    # Define your custom admin options if any
+    pass

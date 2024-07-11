@@ -97,4 +97,46 @@ def get_objects(request):
     print(json_data)
     return JsonResponse(list(objects), safe=False)
 
+from io import BytesIO
+from django.template.loader import get_template
+from django.conf import settings
+from xhtml2pdf import pisa
+from .models import FuelWorkflow
+import os
 
+from django.shortcuts import get_object_or_404
+
+def generate_fuel_workflow_report(request, fuel_workflow_id):
+    # Query specific FuelWorkflow instance
+    fuel_workflow = get_object_or_404(FuelWorkflow, id=fuel_workflow_id)
+
+    # Get template path
+    template_path = os.path.join(settings.BASE_DIR, 'workflow/templates/fuelslip.html')
+
+    # Load template
+    template = get_template(template_path)
+
+    # Context data for rendering template
+    context = {
+        'fuel_workflow': fuel_workflow  # Pass the FuelWorkflow instance to the template
+    }
+
+    # Render template with context data
+    html = template.render(context)
+
+    # Create a BytesIO stream to hold the PDF data
+    pdf_file = BytesIO()
+
+    # Generate PDF
+    pisa_status = pisa.CreatePDF(html, dest=pdf_file)
+
+    # Check if PDF generation was successful
+    if not pisa_status.err:
+        pdf_file.seek(0)  # Reset file pointer to beginning
+        response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="fuel_workflow_report_{fuel_workflow_id}.pdf"'
+        pdf_file.close()
+        return response
+    else:
+        pdf_file.close()
+        return HttpResponse('Failed to generate PDF', status=400)

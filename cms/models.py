@@ -86,6 +86,9 @@ class ItemModel(DateTimeModel):
 class VehicleType(DateTimeModel):
     name=models.CharField(max_length=255,null=True,blank=True)
 
+    def __str__(self) -> str:
+        return self.name
+
 class VehicleModel(DateTimeModel):
     type = models.ForeignKey(VehicleType, verbose_name=_("vehicle"), on_delete=models.DO_NOTHING)
     vehicle_number = models.CharField(max_length=255)

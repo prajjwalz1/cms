@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    {% if original.pdf_link %}
+        <li>
+            <a href="{{ original.pdf_link }}" target="_blank" class="button" style="margin-left: 5px;">
+                <span class="fa fa-file-pdf-o"></span> {% trans "Print PDF" %}
+            </a>
+        </li>
+    {% endif %}
+{% endblock %}

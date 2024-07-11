@@ -3,6 +3,8 @@ from cms.mixins import *
 from cms.models import *
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
+
 # Create your models here.
 
 class Workflow(models.Model):
@@ -34,18 +36,37 @@ class Workflow(models.Model):
 
 
 
-class FuelWorkflow(DateTimeModel):
-    vehicle=models.ForeignKey(VehicleModel,on_delete=models.SET_NULL,null=True,blank=True)
+class FuelWorkflow(models.Model):
+    vehicle = models.ForeignKey(VehicleModel, on_delete=models.SET_NULL, null=True, blank=True)
+    fuel_supplier = models.ForeignKey(SupplierModel, on_delete=models.SET_NULL, null=True, blank=True)
+    fuel_rate = models.DecimalField(max_digits=10, decimal_places=2)
     remaining_fuel = models.DecimalField(max_digits=10, decimal_places=2)
-    request_fuel = models.DecimalField(max_digits=10, decimal_places=2)
-    purpose = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    purpose = models.CharField(max_length=255, null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     status = models.CharField(
         max_length=10,
         choices=(
             ('pending', 'Pending'),
             ('approved', 'Approved'),
-            ('completed', 'completed')
+            ('completed', 'Completed'),
         ),
         default='pending'
     )
+    fuel_type = models.CharField(
+        max_length=10,
+        choices=(
+            ('diesel', 'Diesel'),
+            ('petrol', 'Petrol'),
+        ),
+        default='diesel'
+    )
+    pdf_link = models.URLField(blank=True)
 
+    def save(self, *args, **kwargs):
+        # Check if status has changed to 'approved' and pdf_link is not set
+        if self.status == 'approved' and not self.pdf_link:
+            self.pdf_link = reverse('generate_fuel_workflow_report', args=[self.pk])
+        super().save(*args, **kwargs)
+    def __str__(self) -> str:
+        return self.vehicle.vehicle_number

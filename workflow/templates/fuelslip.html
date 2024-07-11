@@ -2,77 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fuel Slip Form</title>
+    <title>Fuel Workflow Approval</title>
     <style>
+        /* Define your CSS styles here */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 20px;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Ctext x="10" y="180" font-family="Arial" font-size="20" fill="rgba(0, 0, 0, 0.1)"%3EVerified%3C/text%3E%3C/svg%3E');
+            background-size: 400px 400px;
+            background-repeat: repeat;
+            background-position: center;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            background-color: #fff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            position: relative;
         }
         h1 {
-            text-align: center;
             color: #333;
+            text-align: center;
+        }
+        .details {
             margin-bottom: 20px;
         }
-        .form-group {
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 20px;
         }
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        input[type="text"], input[type="number"] {
-            width: calc(100% - 12px);
+        th, td {
+            border: 1px solid #ddd;
             padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
+            text-align: left;
         }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Fuel Slip Form</h1>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_fuel_quantity">Fuel Quantity (liters):</label>
-                <input type="number" id="id_fuel_quantity" name="fuel_quantity" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label for="id_vehicle_number">Vehicle Number:</label>
-                <input type="text" id="id_vehicle_number" name="vehicle_number" required>
-            </div>
-            <div class="form-group">
-                <label for="id_vehicle_type">Vehicle Type:</label>
-                <input type="text" id="id_vehicle_type" name="vehicle_type" required>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Submit">
-            </div>
-        </form>
+        <h1>Fuel Workflow Approval</h1>
+        
+        <!-- Supplier Copy Table -->
+        <h2>Supplier Copy</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Vehicle</td>
+                    <td>{{ fuel_workflow.vehicle }}</td>
+                </tr>
+                <tr>
+                    <td>Fuel Supplier</td>
+                    <td>{{ fuel_workflow.fuel_supplier }}</td>
+                </tr>
+                <tr>
+                    <td>Fuel Rate</td>
+                    <td>{{ fuel_workflow.fuel_rate }}</td>
+                </tr>
+                <tr>
+                    <td>Remaining Fuel</td>
+                    <td>{{ fuel_workflow.remaining_fuel }}</td>
+                </tr>
+                <tr>
+                    <td>Quantity</td>
+                    <td>{{ fuel_workflow.quantity }}</td>
+                </tr>
+                <tr>
+                    <td>Total Amount</td>
+                    <td>{{ fuel_workflow.total_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Purpose</td>
+                    <td>{{ fuel_workflow.purpose }}</td>
+                </tr>
+                <tr>
+                    <td>Status</td>
+                    <td>{{ fuel_workflow.get_status_display }}</td>
+                </tr>
+                <tr>
+                    <td>Fuel Type</td>
+                    <td>{{ fuel_workflow.get_fuel_type_display }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Company Copy Table -->
+        <h2>Company Copy</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Vehicle</td>
+                    <td>{{ fuel_workflow.vehicle }}</td>
+                </tr>
+                <tr>
+                    <td>Fuel Supplier</td>
+                    <td>{{ fuel_workflow.fuel_supplier }}</td>
+                </tr>
+                <tr>
+                    <td>Fuel Rate</td>
+                    <td>{{ fuel_workflow.fuel_rate }}</td>
+                </tr>
+                <tr>
+                    <td>Remaining Fuel</td>
+                    <td>{{ fuel_workflow.remaining_fuel }}</td>
+                </tr>
+                <tr>
+                    <td>Quantity</td>
+                    <td>{{ fuel_workflow.quantity }}</td>
+                </tr>
+                <tr>
+                    <td>Total Amount</td>
+                    <td>{{ fuel_workflow.total_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Purpose</td>
+                    <td>{{ fuel_workflow.purpose }}</td>
+                </tr>
+                <tr>
+                    <td>Status</td>
+                    <td>{{ fuel_workflow.get_status_display }}</td>
+                </tr>
+                <tr>
+                    <td>Fuel Type</td>
+                    <td>{{ fuel_workflow.get_fuel_type_display }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
