@@ -28,6 +28,12 @@
                 selectField.name = fieldName;  // Field name
                 selectField.id = fieldId;  // Field ID for Django
 
+                // Add placeholder option to the select field
+                const placeholderOption = document.createElement('option');
+                placeholderOption.value = "";
+                placeholderOption.textContent = "Select an option...";
+                selectField.appendChild(placeholderOption);
+
                 // Add options to the select field
                 options.forEach(option => {
                     const optionElement = document.createElement('option');
@@ -35,9 +41,6 @@
                     optionElement.textContent = option.name;
                     selectField.appendChild(optionElement);
                 });
-
-                // Optionally set placeholder attribute for the select field
-                selectField.placeholder = 'Select an option...';  // Example placeholder text
 
                 // Event listener for option selection
                 selectField.addEventListener('change', function() {
@@ -71,10 +74,8 @@
                             // Create new field with fetched options
                             createNewField(newFieldName, newFieldId, data, hiddenField, label);
 
-                            // Force update hidden field if there's only one option
-                            if (data.length === 1) {
-                                hiddenField.value = data[0].id;  // Update hidden field with the single option's ID
-                            }
+                            // Clear the hidden field value initially
+                            hiddenField.value = "";
                         })
                         .catch(error => {
                             console.error('Error fetching data:', error);

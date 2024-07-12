@@ -1,0 +1,67 @@
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+{{ block.super }}
+
+<style>
+    .inventory-details {
+        margin-top: 20px;
+    }
+    .inventory-details h2 {
+        color: #4F8A10;
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+    .inventory-details table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .inventory-details th, .inventory-details td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+    .inventory-details .low-stock {
+        background-color: #FFCCCC;
+    }
+    .status {
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+    .status-low {
+        color: red;
+    }
+</style>
+
+<div class="inventory-details">
+    <h2>Inventory Details for {{ original }}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in original.siteinventorydetails_set.all|dictsort:"quantity" %}
+            {% with detail.item as item %}
+            <tr {% if detail.quantity < item.stock_alert %}class="low-stock"{% endif %}>
+                <td>{{ item.name }}</td>
+                <td>{{ detail.quantity }} {{ item.unit }}</td>
+                <td class="status {% if detail.quantity < item.stock_alert %}status-low{% endif %}">
+                    {% if detail.quantity < item.stock_alert %}
+                        Low
+                    {% else %}
+                        Normal
+                    {% endif %}
+                </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
