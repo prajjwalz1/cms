@@ -77,7 +77,7 @@ class FuelWorkflow(models.Model):
             if platform.system() == 'Windows':
                 base_url = 'http://localhost:8000'
             elif platform.system() == 'Linux':
-                base_url = 'https://kailashcms.carringmanagement.com.au/'
+                base_url = 'https://kailashcms.carringmanagement.com.au'
             pdf_url = reverse('generate_fuel_workflow_report', args=[self.pk])
             self.pdf_link = base_url + pdf_url
         super().save(*args, **kwargs)
