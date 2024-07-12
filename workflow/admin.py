@@ -60,8 +60,29 @@ class WorkflowAdmin(admin.ModelAdmin):
 
 admin.site.register(Workflow, WorkflowAdmin)
 
+class FuelWorkflowAdminForm(forms.ModelForm):
+    class Meta:
+        model = FuelWorkflow
+        fields = '__all__'
 
-@admin.register(FuelWorkflow)
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if not instance.pk:
+            instance.request_by = self.current_user
+        if commit:
+            instance.save()
+        return instance
 class FuelWorkflowAdmin(admin.ModelAdmin):
-    # Define your custom admin options if any
-    pass
+    form = FuelWorkflowAdminForm
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.request_by = request.user
+        super().save_model(request, obj, form, change)
+
+admin.site.register(FuelWorkflow, FuelWorkflowAdmin)

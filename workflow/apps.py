@@ -6,5 +6,4 @@ class WorkflowConfig(AppConfig):
     name = 'workflow'
 
     def ready(self):
-        # Import your model here to avoid circular import
-        from .models import FuelWorkflow
+        import workflow.signals

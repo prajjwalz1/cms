@@ -4,9 +4,10 @@ from cms.models import *
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
-
+from django.core.mail import send_mail
+from django.conf import settings
 # Create your models here.
-
+import platform
 class Workflow(models.Model):
     request_from_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='request_from_set')
     request_from_id = models.PositiveIntegerField()
@@ -44,6 +45,7 @@ class FuelWorkflow(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     purpose = models.CharField(max_length=255, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    request_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL,null=True,blank=True)  # Assuming request_by is a User
     status = models.CharField(
         max_length=10,
         choices=(
@@ -64,9 +66,36 @@ class FuelWorkflow(models.Model):
     pdf_link = models.URLField(blank=True)
 
     def save(self, *args, **kwargs):
-        # Check if status has changed to 'approved' and pdf_link is not set
-        if self.status == 'approved' and not self.pdf_link:
-            self.pdf_link = reverse('generate_fuel_workflow_report', args=[self.pk])
+        # Calculate total_amount if quantity or fuel_rate has changed
+        if self.quantity is not None and self.fuel_rate is not None:
+            if self.pk is None or (self.pk is not None and (self.quantity != self.__class__.objects.get(pk=self.pk).quantity or self.fuel_rate != self.__class__.objects.get(pk=self.pk).fuel_rate)):
+                self.total_amount = self.quantity * self.fuel_rate
+
+        # Set pdf_link when status changes to 'approved'
+        if self.status in ['approved', 'completed'] and not self.pdf_link:
+            # Construct the full URL manually based on your project's configuration
+            if platform.system() == 'Windows':
+                base_url = 'http://localhost:8000'
+            elif platform.system() == 'Linux':
+                base_url = 'https://kailashcms.carringmanagement.com.au/'
+            pdf_url = reverse('generate_fuel_workflow_report', args=[self.pk])
+            self.pdf_link = base_url + pdf_url
         super().save(*args, **kwargs)
-    def __str__(self) -> str:
+
+        # Handle sending emails
+        # if kwargs.get('send_email', True):
+        #     if self.pk is None:  # New instance created
+        #         subject = 'New Fuel Request Created'
+        #         message = f'A new fuel request has been created.\n\nDetails:\nVehicle: {self.vehicle}\nFuel Quantity: {self.quantity}\nPurpose: {self.purpose}'
+        #         from_email = settings.EMAIL_HOST_USER
+        #         to_email = ['samsherthapa91@gmail.com']  # Replace with your recipient's email address
+        #         send_mail(subject, message, from_email, to_email)
+        #     elif self.status == 'approved':  # Request approved
+        #         subject = 'Fuel Request Approved'
+        #         message = f'Your fuel request has been approved.\n\nDetails:\nVehicle: {self.vehicle}\nFuel Quantity: {self.quantity}\nPurpose: {self.purpose}'
+        #         from_email = settings.EMAIL_HOST_USER
+        #         to_email = [self.request_by.email]  # Send email to the requester
+        #         send_mail(subject, message, from_email, to_email)
+
+    def __str__(self):
         return self.vehicle.vehicle_number
