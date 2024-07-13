@@ -24,7 +24,7 @@ class Workflow(models.Model):
 
     def __str__(self):
         if self.request_from and self.request_dest:
-            return f"{self.request_quantity} * {self.request_item} from {self.request_from.name} to {self.request_dest.name}" if self.request_from_type.model and self.request_dest_type.model in ["suppliermodel","warehousemodel","sitemodel"] else "None"
+            return f" Status {self.status} for {self.request_quantity} * {self.request_item} from {self.request_from.name} to {self.request_dest.name}" if self.request_from_type.model and self.request_dest_type.model in ["suppliermodel","warehousemodel","sitemodel"] else "None"
         return "Unknown"
 
     def save(self, *args, **kwargs):
