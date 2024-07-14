@@ -12,15 +12,15 @@ class Workflow(models.Model):
     request_from_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='request_from_set')
     request_from_id = models.PositiveIntegerField()
     request_from = GenericForeignKey('request_from_type', 'request_from_id')
-    request_dest_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='request_dest_set')
-    request_dest_id = models.PositiveIntegerField(null=True)
+    request_dest_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='request_dest_set',null=False,blank=False,default=1)
+    request_dest_id = models.PositiveIntegerField(null=False,blank=False,default=1)
     request_dest = GenericForeignKey('request_dest_type', 'request_dest_id')
     status = models.CharField(choices=(('pending', 'pending'), ('approved', 'approved'), ('completed', 'completed')), default='pending')
-    request_item = models.ForeignKey(ItemModel, on_delete=models.SET_NULL, null=True, blank=True)
-    request_quantity = models.FloatField(null=True, blank=True)
+    request_item = models.ForeignKey(ItemModel, on_delete=models.DO_NOTHING, null=False, blank=False,default=1)
+    request_quantity = models.FloatField(null=False, blank=False,default=1)
     bill_image=models.ImageField(upload_to='static/bills',null=True,blank=True)
     bill_amount=models.FloatField(null=True,blank=True)
-    purchase_type=models.CharField(choices=(('cash','cash'),('cheque','cheque'),('credit','credit'),('mobile-banking','mobile-banking')),null=True,blank=True)
+    purchase_type=models.CharField(choices=(('cash','cash'),('cheque','cheque'),('credit','credit'),('mobile-banking','mobile-banking')),null=False,blank=False,default="cash")
 
     def __str__(self):
         if self.request_from and self.request_dest:
@@ -81,21 +81,6 @@ class FuelWorkflow(models.Model):
             pdf_url = reverse('generate_fuel_workflow_report', args=[self.pk])
             self.pdf_link = base_url + pdf_url
         super().save(*args, **kwargs)
-
-        # Handle sending emails
-        # if kwargs.get('send_email', True):
-        #     if self.pk is None:  # New instance created
-        #         subject = 'New Fuel Request Created'
-        #         message = f'A new fuel request has been created.\n\nDetails:\nVehicle: {self.vehicle}\nFuel Quantity: {self.quantity}\nPurpose: {self.purpose}'
-        #         from_email = settings.EMAIL_HOST_USER
-        #         to_email = ['samsherthapa91@gmail.com']  # Replace with your recipient's email address
-        #         send_mail(subject, message, from_email, to_email)
-        #     elif self.status == 'approved':  # Request approved
-        #         subject = 'Fuel Request Approved'
-        #         message = f'Your fuel request has been approved.\n\nDetails:\nVehicle: {self.vehicle}\nFuel Quantity: {self.quantity}\nPurpose: {self.purpose}'
-        #         from_email = settings.EMAIL_HOST_USER
-        #         to_email = [self.request_by.email]  # Send email to the requester
-        #         send_mail(subject, message, from_email, to_email)
 
     def __str__(self):
         return self.vehicle.vehicle_number

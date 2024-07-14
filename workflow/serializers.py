@@ -32,7 +32,8 @@ class WorkflowSerializer(serializers.ModelSerializer):
 class RequestWorkflowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workflow
-        fields = "__all__"
+        fields = '__all__'
+        read_only_fields = ['status']  # Make the status field read-only
 
     def to_representation(self, instance):
         ret= super().to_representation(instance)
@@ -47,7 +48,7 @@ class RequestWorkflowSerializer(serializers.ModelSerializer):
         data = super().validate(data)
         request_from_type = data.get('request_from_type')
         
-        if request_from_type and request_from_type.model == 'suppliermodel':
+        if request_from_type and request_from_type.model == 'suppliermodel' and data.get("status") in ["approved","completed"]:
             if not data.get('bill_image'):
                 raise serializers.ValidationError({'bill_image': 'This field is required when request_from_type is supplier.'})
             if not data.get('bill_amount'):
@@ -58,3 +59,8 @@ class RequestWorkflowSerializer(serializers.ModelSerializer):
         # Return the validated data
         return data
     
+
+class RequestFuelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=FuelWorkflow
+        fields="__all__"

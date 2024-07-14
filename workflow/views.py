@@ -45,18 +45,34 @@ class WorkflowRequest(ResponseMixin, APIView):
     def post(self, request):
         request_type = request.GET.get("request")
         
-        if request_type == "create_workflow":
+        if request_type == "materials_request_workflow":
             return self.CreateWorkflowRequest(request)
+        if request_type == "CreateFuelRequest":
+            return self.CreateFuelRequest(request)
         else:
             return BadRequestResponse(request_type)
         
     def CreateWorkflowRequest(self,request):
-        serializer=RequestWorkflowSerializer(data=request.data)
+        data=request.data
+        data["request_by"]=request.user.id
+        serializer=RequestWorkflowSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
         else:
              return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
+        
+    def CreateFuelRequest(self,request):
+        payload = request.POST.copy()
+        print(payload)
+        payload["request_by"]=request.user.id
+        serializer=RequestFuelSerializer(data=payload)
+        if serializer.is_valid():
+            serializer.save()
+            return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
+        else:
+             return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
+
 
     def VehicleRequest(request):
         request_from=request.data.get("from")
