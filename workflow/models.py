@@ -19,6 +19,7 @@ class Workflow(models.Model):
     request_item = models.ForeignKey(ItemModel, on_delete=models.DO_NOTHING, null=False, blank=False,default=1)
     request_quantity = models.FloatField(null=False, blank=False,default=1)
     bill_image=models.ImageField(upload_to='static/bills',null=True,blank=True)
+    request_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL,null=True,blank=True)
     bill_amount=models.FloatField(null=True,blank=True)
     purchase_type=models.CharField(choices=(('cash','cash'),('cheque','cheque'),('credit','credit'),('mobile-banking','mobile-banking')),null=False,blank=False,default="cash")
 
@@ -33,7 +34,10 @@ class Workflow(models.Model):
             if previous.status == 'completed' and self.status != 'completed':
                 raise ValueError("Cannot change status from 'completed' to another status")
         super().save(*args, **kwargs)        
-
+    class Meta:
+        permissions = [
+            ("approve_workflow", "Can approve workflow"),
+        ]    
 
 
 

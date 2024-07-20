@@ -70,3 +70,18 @@ class GetSingleObjectMixin:
             return model_class.objects.get(pk=pk), None
         except Exception as e:
             return None, f"Item with id '{pk}' does not exists."
+
+
+from rest_framework.views import exception_handler
+from rest_framework.response import Response
+
+def custom_exception_handler(exc, context):
+    response = exception_handler(exc, context)
+    if response is not None and response.status_code == 403:
+        response.data = {
+            "success":False,
+            'message': 'Permission Denied',
+            'data': []
+        }
+    
+    return response

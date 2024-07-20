@@ -6,10 +6,10 @@ class WorkflowSerializer(serializers.ModelSerializer):
     request_dest_type = serializers.CharField(source='request_dest_type.model', allow_null=True)
     request_item = serializers.CharField(source='request_item.name', allow_null=True)
     request_item_unit = serializers.CharField(source='request_item.unit', allow_null=True,)
-
+    request_by=serializers.CharField(source='request_by.contact',allow_null=True)
     class Meta:
         model = Workflow
-        fields = ['id','request_item','request_quantity','request_item_unit', 'request_from_type', 'request_dest_type','status','bill_image','bill_amount','purchase_type']
+        fields = ['id','request_item','request_by','request_quantity','request_item_unit', 'request_from_type', 'request_dest_type','status','bill_image','bill_amount','purchase_type']
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -64,3 +64,12 @@ class RequestFuelSerializer(serializers.ModelSerializer):
     class Meta:
         model=FuelWorkflow
         fields="__all__"
+
+
+class ApproveWorkflowSerializer(serializers.Serializer):
+    workflow_id = serializers.IntegerField()
+    bill_amount = serializers.FloatField(required=True) 
+    bill_image = serializers.ImageField(required=True)
+
+    def validate(self, data):
+        return data

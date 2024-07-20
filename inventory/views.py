@@ -50,3 +50,5 @@ class Inventory(APIView):
                 results = {name: future.result() for name, future in futures.items()}
             
             return results
+    
+

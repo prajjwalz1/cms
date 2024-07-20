@@ -10,7 +10,9 @@ urlpatterns = [
     path('workflowrequest/', WorkflowRequest.as_view(), name='WorkflowRequest'),
     path('fuelworkflowrequest/', WorkflowRequest.as_view(), name='WorkflowRequest'),
     path('getcontenttype/', ContentTypeListView.as_view(), name='ContentTypeListView'),
-    path('createfuelcoupon/<int:fuel_workflow_id>', views.generate_fuel_workflow_report, name='generate_fuel_workflow_report')
+    path('createfuelcoupon/<int:fuel_workflow_id>', views.generate_fuel_workflow_report, name='generate_fuel_workflow_report'),
+    path('approveworkflow/', ApproveWorkflow.as_view(), name='ApproveWorkflow')
+    
 ] 
 
 if settings.DEBUG:

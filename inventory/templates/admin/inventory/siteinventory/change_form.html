@@ -45,7 +45,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for detail in original.siteinventorydetails_set.all|dictsort:"quantity" %}
+            {% for detail in aggregated_details %}
             {% with detail.item as item %}
             <tr {% if detail.quantity < item.stock_alert %}class="low-stock"{% endif %}>
                 <td>{{ item.name }}</td>
