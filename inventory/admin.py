@@ -49,7 +49,6 @@ class SiteInventoryAdmin(admin.ModelAdmin):
         extra_context['custom_template'] = 'admin/inventory/siteinventory/change_form.html'
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
     
-
 @admin.register(WareHouseInventory)
 class WareHouseInventoryAdmin(admin.ModelAdmin):
     list_display = ('warehouse',)
@@ -69,6 +68,20 @@ class WareHouseInventoryAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
+        obj = self.get_object(request, object_id)
+
+        # Aggregate quantities by item
+        aggregated_items = defaultdict(int)
+        for detail in obj.warehouseinventorydetails_set.all():
+            aggregated_items[detail.item] += detail.quantity
+
+        # Prepare the aggregated data for the template
+        aggregated_details = [
+            {'item': item, 'quantity': quantity}
+            for item, quantity in aggregated_items.items()
+        ]
+
+        extra_context['aggregated_details'] = aggregated_details
         extra_context['custom_template'] = 'admin/inventory/warehouseinventory/change_form.html'
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
     
