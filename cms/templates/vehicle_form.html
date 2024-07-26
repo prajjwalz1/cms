@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vehicle TAX Calculator</title>
+    <!-- Nepali Datepicker -->
+    <link
+        href="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/css/nepali.datepicker.v4.0.4.min.css"
+        rel="stylesheet" type="text/css"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .checkbox-group label {
+            font-weight: normal;
+            margin-left: 5px;
+        }
+        
+        .btn-calculate {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .btn-calculate:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js" type="text/javascript"></script>
+    <script>
+        window.onload = function() {
+            var renewDateInput = document.getElementById("renew");
+            var expiryDateInput = document.getElementById("expiry");
+            
+            if (renewDateInput && typeof renewDateInput.nepaliDatePicker === 'function') {
+                renewDateInput.nepaliDatePicker();
+            } else {
+                console.error("Nepali Date Picker function is not available for the Renew Date input.");
+            }
+            
+            if (expiryDateInput && typeof expiryDateInput.nepaliDatePicker === 'function') {
+                expiryDateInput.nepaliDatePicker();
+            } else {
+                console.error("Nepali Date Picker function is not available for the Expiry Date input.");
+            }
+        };
+
+        // Example function to convert BS to AD
+        function convertDates() {
+            function bsToAd(bsDate) {
+                // Placeholder logic for BS to AD conversion
+                return "2023-07-25"; // Example conversion result
+            }
+
+            let renewDate = document.getElementById('renew').value;
+            let expiryDate = document.getElementById('expiry').value;
+
+            // Convert BS dates to AD dates
+            let adRenewDate = bsToAd(renewDate);
+            let adExpiryDate = bsToAd(expiryDate);
+
+            // Update the form fields with AD dates
+            document.getElementById('renew').value = adRenewDate;
+            document.getElementById('expiry').value = adExpiryDate;
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Abiral Sanchar</h1>
+        <h2>Trusted Vehicle Bluebook Renewal system</h2>
+        <form method="post" action="{% url 'vehicle_form' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="wheel">Vehicle Type*</label>
+                <select id="wheel" name="wheel" required>
+                    <option value="2">2 Wheeler</option>
+                    <option value="4">4 Wheeler</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cc">Engine CC*</label>
+                <input type="number" id="cc" name="cc" placeholder="Enter Engine CC" required>
+            </div>
+            <div class="form-group">
+                <label for="renew">Renew Date*</label>
+                <input type="text" id="renew" name="renew" placeholder="2079-08-06" required>
+            </div>
+            <div class="form-group">
+                <label for="expiry">Expiry Date*</label>
+                <input type="text" id="expiry" name="expiry" placeholder="2080-08-05" required>
+            </div>
+            <div class="form-group">
+                <label for="province">Province*</label>
+                <select id="province" name="province" required>
+                    <option value="Province 1">Province 1</option>
+                    <option value="Province 2">Province 2</option>
+                    <option value="Province 3">Province 3 (Bagmati)</option>
+                    <option value="Province 4">Province 4</option>
+                    <option value="Province 5">Province 5</option>
+                    <option value="Province 6">Province 6</option>
+                    <option value="Province 7">Province 7</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="manufacture">Year of Manufacture</label>
+                <input type="number" id="manufacture" name="manufacture" placeholder="Enter Year of Manufacture">
+            </div>
+            <div class="form-group checkbox-group">
+                <label><input type="checkbox" id="insurance" name="insurance"> Third Party Insurance</label>
+            </div>
+            {% comment %} <div class="form-group checkbox-group">
+                <label><input type="checkbox" id="future_payment" name="future_payment"> Future Payment Plan</label>
+            </div> {% endcomment %}
+            <div class="form-group">
+                <button type="submit" class="btn-calculate">CALCULATE</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index),
     path('api/v1/',include('cms.urls')),
+    path('api/bluebook/',include('bluebook.urls')),
     path('api/v1/workflow/',include('workflow.urls')),
     path('auth/',include('users.urls')),
     path('api/v1/inventory/',include('inventory.urls'))

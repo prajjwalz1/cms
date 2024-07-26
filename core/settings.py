@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'cms',
     'workflow',
     'inventory',
-    'account'
+    'account',
+    'bluebook'
     
     
 ]
