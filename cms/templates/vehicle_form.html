@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vehicle TAX Calculator</title>
     <!-- Nepali Datepicker -->
     <link
-        href="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/css/nepali.datepicker.v4.0.4.min.css"
+        href="https://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/css/nepali.datepicker.v4.0.4.min.css"
         rel="stylesheet" type="text/css"/>
     <style>
         body {
@@ -15,6 +16,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
         
         .container {
@@ -22,7 +24,9 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 500px;
+            width: 90%;
+            max-width: 500px;
+            box-sizing: border-box;
         }
         
         h1 {
@@ -84,7 +88,7 @@
             background-color: #0056b3;
         }
     </style>
-    <script src="http://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js" type="text/javascript"></script>
+    <script src="https://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/js/nepali.datepicker.v4.0.4.min.js" type="text/javascript"></script>
     <script>
         window.onload = function() {
             var renewDateInput = document.getElementById("renew");
@@ -128,7 +132,7 @@
 <body>
     <div class="container">
         <h1>Abiral Sanchar</h1>
-        <h2>Trusted Vehicle Bluebook Renewal system</h2>
+        <h2>Trusted Vehicle Bluebook Renewal System</h2>
         <form method="post" action="{% url 'vehicle_form' %}">
             {% csrf_token %}
             <div class="form-group">

@@ -71,5 +71,5 @@ urlpatterns = [
         GroupDetailAPIView.as_view(),
         name="group_detail",
     ),
-    path("bluebook-renew/", vehicle_form, name="vehicle_form"),
+
 ]
