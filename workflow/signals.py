@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import FuelWorkflow
+from .models import FuelWorkflow,Workflow
 
 
 @receiver(post_save, sender=FuelWorkflow)
@@ -27,3 +27,13 @@ def send_approved_fuel_request_email(sender, instance, created, **kwargs):
         to_email = [instance.request_by.email]  # Assuming request_by is a User model field
         print(to_email)
         send_mail(subject, message, from_email, to_email)
+
+# @receiver(post_save, sender=Workflow)
+# def generalworkflow_request_email(sender, instance, created, **kwargs):
+#     if created:
+#         print("signals trigerred")
+#         subject = 'New workflow Request'
+#         message = f'New workflow has been requested.\n\nDetails:\nVehicle: {instance.vehicle}\nFuel Quantity: {instance.quantity}\nPurpose: {instance.purpose}'
+#         from_email = settings.EMAIL_HOST_USER
+#         to_email = ['samsherthapa91@gmail.com']  # Replace with your recipient's email address
+#         send_mail(subject, message, from_email, to_email)

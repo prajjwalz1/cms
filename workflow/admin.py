@@ -12,12 +12,12 @@ from django import forms
 from django.contrib.admin import ModelAdmin
 from .models import Workflow
 
-
+admin.site.register(RequestItemDetails)
 
 class WorkflowAdminForm(forms.ModelForm):
     class Meta:
         model = Workflow
-        fields = ["request_from_type", 'request_item', "request_quantity", "request_dest_type", "request_from_id", "request_dest_id", 'status', 'bill_image', 'bill_amount', 'purchase_type']
+        fields = ["request_from_type", 'items',"request_dest_type", "request_from_id", "request_dest_id", 'status', 'bill_image', 'bill_amount', 'purchase_type']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

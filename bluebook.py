@@ -1,58 +1,51 @@
-import requests
-from bs4 import BeautifulSoup
+import pandas as pd
 
-# API URL
-url = "https://www.hellobeema.com/"
-params = {
-    "wheel": 2,
-    "cc": 159,
-    "from": "web",
-    "renew": "2079-04-12",
-    "expiry": "2080-04-11",
-    "province": "Province 3",
-    "manufacture": 2021,
-    "seat": "",
-    "insurance": "on"
+# Load the Excel file
+file_path = 'tax.xlsx'
+excel_data = pd.ExcelFile(file_path)
+
+# Function to extract and structure data from a sheet
+def extract_data(sheet_name):
+    data = excel_data.parse(sheet_name)
+    
+    # Get column names dynamically
+    columns = data.columns.tolist()
+    
+    structured_data = []
+    
+    # Iterate through the rows and extract relevant data
+    for index, row in data.iterrows():
+        row_data = {}
+        for col in columns:
+            row_data[col] = row[col] if not pd.isna(row[col]) else None
+        structured_data.append(row_data)
+    
+    return structured_data
+
+# Extract data from each sheet
+insurance_data_structured = extract_data('Insurance')
+koshi_data_structured = extract_data('Koshi')
+madhesh_data_structured = extract_data('Madhesh')
+lumbini_data_structured = extract_data('Lumbini')
+bagmati_data_structured = extract_data('Bagmati')
+
+# Combine all structured data
+all_provinces_data = {
+    "insurance": insurance_data_structured,
+    "koshi": koshi_data_structured,
+    "madhesh": madhesh_data_structured,
+    "lumbini": lumbini_data_structured,
+    "bagmati": bagmati_data_structured
 }
 
-# Send GET request
-response = requests.get(url, params=params)
+# Convert the structured data to JSON
+import json
+json_data = json.dumps(all_provinces_data, indent=4)
 
-# Check if the request was successful
-if response.status_code == 200:
-    # Parse HTML content
-    soup = BeautifulSoup(response.text, 'html.parser')
-    
-    # Find the modal with id 'calcData'
-    modal = soup.find('div', id='calcData')
-    
-    if modal:
-        # Extract the table data
-        table = modal.find('table')
-        if table:
-            rows = table.find_all('tr')
-            
-            data = {}
-            for row in rows:
-                cols = row.find_all('td')
-                if len(cols) == 2:
-                    key = cols[0].get_text(strip=True)
-                    value = cols[1].get_text(strip=True)
-                    data[key] = value
-            
-            # Extract the total bill amount
-            total_row = table.find('tfoot').find('tr')
-            if total_row:
-                total_amount = total_row.find('th', id='total')
-                if total_amount:
-                    data['Total Bill Amount'] = total_amount.get_text(strip=True)
+# Save JSON data to a file
+json_file_path = 'vehicle_tax_insurance_2081.json'
+with open(json_file_path, 'w') as json_file:
+    json_file.write(json_data)
 
-            print(data)
-            for key, value in data.items():
-                print(f"{key}: {value}")
-        else:
-            print("Table not found in modal.")
-    else:
-        print("Modal with id 'calcData' not found.")
-else:
-    print("Failed to retrieve data. Status code:", response.status_code)
+# Print JSON data
+print(json_data)

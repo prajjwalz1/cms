@@ -177,7 +177,7 @@ class SiteModel(DateTimeModel):
     def __str__(self) -> str:
         return self.name
 
-class Manpower(models.Model):
+class Manpower(DateTimeModel):
     name=models.CharField(max_length=255,null=True,blank=True)
     position=models.CharField(max_length=255,null=True,blank=True)
     manpower_type=models.CharField(choices=(('skilled','skilled'),('semi-skilled','semi-skilled'),('un-skilled','un-skilled')))

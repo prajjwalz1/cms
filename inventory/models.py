@@ -29,7 +29,7 @@ class SiteInventoryDetails(DateTimeModel):
 
 
 class WareHouseInventory(DateTimeModel):
-    warehouse=models.ForeignKey(WarehouseModel,on_delete=models.SET_NULL,null=True,blank=True)
+    warehouse=models.ForeignKey(WarehouseModel,on_delete=models.DO_NOTHING,null=True,blank=True)
     items=models.ManyToManyField(ItemModel,through='WareHouseInventoryDetails')
 
     def __str__(self):
@@ -37,8 +37,8 @@ class WareHouseInventory(DateTimeModel):
 
 
 class WareHouseInventoryDetails(DateTimeModel):
-    warehouse_inventory=models.ForeignKey(WareHouseInventory,on_delete=models.SET_NULL,null=True,blank=True)
-    item=models.ForeignKey(ItemModel,on_delete=models.SET_NULL,null=True,blank=True)
+    warehouse_inventory=models.ForeignKey(WareHouseInventory,on_delete=models.DO_NOTHING,null=True,blank=True)
+    item=models.ForeignKey(ItemModel,on_delete=models.DO_NOTHING,null=True,blank=True)
     quantity=models.IntegerField(null=False,blank=False,default=0)
     updated_at=models.DateTimeField(auto_now=True)
 
