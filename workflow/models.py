@@ -37,6 +37,7 @@ class Workflow(DateTimeModel):
         permissions = [
             ("approve_workflow", "Can approve workflow"),
         ]    
+        ordering=["-created_at"]
 
 class RequestItemDetails(DateTimeModel):
     wflow=models.ForeignKey(Workflow,on_delete=models.DO_NOTHING)

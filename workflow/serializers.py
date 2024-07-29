@@ -1,15 +1,22 @@
 
 from rest_framework import serializers
 from .models import *
+class RequestItemDetailsSerializer(serializers.ModelSerializer):
+    items = serializers.PrimaryKeyRelatedField(queryset=ItemModel.objects.all())
+
+    class Meta:
+        model = RequestItemDetails
+        fields = ["items", 'request_quantity', 'purpose', 'within']
+
 class WorkflowSerializer(serializers.ModelSerializer):
     request_from_type = serializers.CharField(source='request_from_type.model')
     request_dest_type = serializers.CharField(source='request_dest_type.model', allow_null=True)
-    request_item = serializers.CharField(source='request_item.name', allow_null=True)
-    request_item_unit = serializers.CharField(source='request_item.unit', allow_null=True,)
-    request_by=serializers.CharField(source='request_by.contact',allow_null=True)
+    itemsdetails = RequestItemDetailsSerializer(many=True, source='requestitemdetails_set')  # Assuming the related name is `requestitemdetails_set`
+    request_by = serializers.CharField(source='request_by.contact', allow_null=True)
+
     class Meta:
         model = Workflow
-        fields = ['id','request_item','request_by','request_quantity','request_item_unit', 'request_from_type', 'request_dest_type','status','bill_image','bill_amount','purchase_type']
+        fields = ['id', 'itemsdetails', 'request_by', 'request_from_type', 'request_dest_type', 'status', 'bill_image', 'bill_amount', 'purchase_type']
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -28,12 +35,6 @@ class WorkflowSerializer(serializers.ModelSerializer):
         
         return ret
 
-class RequestItemDetailsSerializer(serializers.ModelSerializer):
-    items = serializers.IntegerField()
-
-    class Meta:
-        model = RequestItemDetails
-        fields = ["items", 'request_quantity', 'purpose', 'within']
 
 class RequestWorkflowSerializer(serializers.ModelSerializer):
     items = serializers.ListField(child=serializers.IntegerField(), write_only=True)  # List of item IDs
@@ -87,7 +88,7 @@ class RequestWorkflowSerializer(serializers.ModelSerializer):
         # Handle the many-to-many relationship through RequestItemDetails
         for item_detail_data in items_details_data:
             item_id = item_detail_data.pop('items')
-            item_instance = ItemModel.objects.get(id=item_id)
+            item_instance = ItemModel.objects.get(id=item_id.id)
             RequestItemDetails.objects.create(wflow=workflow, items=item_instance, **item_detail_data)
 
         # Set the many-to-many field
