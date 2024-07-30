@@ -136,3 +136,9 @@ class ApproveWorkflowSerializer(serializers.Serializer):
 
     def validate(self, data):
         return data
+
+class ApproveFuelWorkflowSerializer(serializers.Serializer):
+    workflow_id = serializers.IntegerField()
+
+    def validate(self, data):
+        return data

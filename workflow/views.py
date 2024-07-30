@@ -11,92 +11,7 @@ from .serializers import *
 from cms.serializers import *
 from django.http import JsonResponse
 from .permissions import CanApproveWorkflow
-def BadRequestResponse(request_type, *args, **kwargs):
-    print(args)
-    return Response({"success": False, "message": f'request {request_type} is not valid'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ContentTypeListView(APIView):
-    allowed_models = ["sitemodel", "warehousemodel","suppliermodel"]
-
-    def get(self, request):
-        content_types = ContentType.objects.filter(model__in=self.allowed_models)
-        content_types_data = []
-
-        for ct in content_types:
-            model_class = ct.model_class()
-            if model_class:
-                instances = model_class.objects.all()
-                instances_data = [{"id": instance.id, "name": str(instance)} for instance in instances]
-                content_types_data.append({
-                    "app_label": ct.app_label,
-                    "model": ct.model,
-                    "id": ct.id,
-                    "instances": instances_data
-                })
-        items=ItemModel.objects.all()
-        item_serialzer=ItemModelSerializer(items,many=True)
-
-        return Response({"success": True,"items":item_serialzer.data, "content_types": content_types_data}, status=status.HTTP_200_OK)
-
-class WorkflowRequest(ResponseMixin, APIView):
-    pagination_class = PageNumberPagination
-
-    def post(self, request):
-        request_type = request.GET.get("request")
-        
-        if request_type == "materials_request_workflow":
-            return self.CreateWorkflowRequest(request)
-        if request_type == "CreateFuelRequest":
-            return self.CreateFuelRequest(request)
-        else:
-            return BadRequestResponse(request_type)
-        
-    def CreateWorkflowRequest(self,request):
-        data=request.data.copy()
-        data["request_by"]=request.user.id
-        serializer=RequestWorkflowSerializer(data=data)
-        # print(data)
-        if serializer.is_valid():
-            # print(serializer.data)
-            serializer.save()
-            return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
-        else:
-             return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
-        
-    def CreateFuelRequest(self,request):
-        payload = request.POST.copy()
-        print(payload)
-        payload["request_by"]=request.user.id
-        serializer=RequestFuelSerializer(data=payload)
-        if serializer.is_valid():
-            serializer.save()
-            return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
-        else:
-             return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
-
-
-    def VehicleRequest(request):
-        request_from=request.data.get("from")
-        request_dest=request.data.get("request_dest")
-        vehicle=request.data.get("request_item")
-        from_date=request.data.get("from_date")
-        purpose=request.data.get("purpose")
-
-        pagination_class = PageNumberPagination
-
-    def get(self, request):
-        try:
-            paginator = self.pagination_class()
-            qs = Workflow.objects.all()
-            paginated_brand = paginator.paginate_queryset(qs, request)
-            serializer = WorkflowSerializer(paginated_brand, many=True,context={'request': request})
-            return self.handle_success_response(
-                status.HTTP_200_OK, serialized_data=serializer.data
-            )
-        except Exception as e:
-            return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
-
+from .pagination import CustomPagination
 
 def get_objects(request):
     model = request.GET.get('model')
@@ -158,8 +73,128 @@ def generate_fuel_workflow_report(request, fuel_workflow_id):
     else:
         pdf_file.close()
         return HttpResponse('Failed to generate PDF', status=400)
-    
 
+def BadRequestResponse(request_type, *args, **kwargs):
+    print(args)
+    return Response({"success": False, "message": f'request {request_type} is not valid'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ContentTypeListView(APIView):
+    allowed_models = ["sitemodel", "warehousemodel","suppliermodel"]
+
+    def get(self, request):
+        content_types = ContentType.objects.filter(model__in=self.allowed_models)
+        content_types_data = []
+
+        for ct in content_types:
+            model_class = ct.model_class()
+            if model_class:
+                instances = model_class.objects.all()
+                instances_data = [{"id": instance.id, "name": str(instance)} for instance in instances]
+                content_types_data.append({
+                    "app_label": ct.app_label,
+                    "model": ct.model,
+                    "id": ct.id,
+                    "instances": instances_data
+                })
+        items=ItemModel.objects.all()
+        item_serialzer=ItemModelSerializer(items,many=True)
+
+        return Response({"success": True,"items":item_serialzer.data, "content_types": content_types_data}, status=status.HTTP_200_OK)
+
+class WorkflowRequest(ResponseMixin, APIView):
+    pagination_class = PageNumberPagination
+
+    def post(self, request):
+        request_type = request.GET.get("request")
+        
+        if request_type == "materials_request_workflow":
+            return self.CreateWorkflowRequest(request)
+        if request_type == "CreateFuelRequest":
+            return self.CreateFuelRequest(request)
+        else:
+            return BadRequestResponse(request_type)
+        
+    def CreateWorkflowRequest(self,request):
+        data=request.data.copy()
+        data["request_by"]=request.user.id
+        serializer=RequestWorkflowSerializer(data=data)
+        # print(data)
+        if serializer.is_valid():
+            # print(serializer.data)
+            serializer.save()
+            return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
+        else:
+             return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
+
+    def VehicleRequest(request):
+        request_from=request.data.get("from")
+        request_dest=request.data.get("request_dest")
+        vehicle=request.data.get("request_item")
+        from_date=request.data.get("from_date")
+        purpose=request.data.get("purpose")
+
+        pagination_class = PageNumberPagination
+
+    def CreateFuelRequest(self,request):
+        payload = request.POST.copy()
+        print(payload)
+        payload["request_by"]=request.user.id
+        serializer=RequestFuelSerializer(data=payload)
+        if serializer.is_valid():
+            serializer.save()
+            return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
+        else:
+             return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
+    def get(self, request):
+        try:
+            paginator = self.pagination_class()
+            qs = Workflow.objects.all()
+            paginated_brand = paginator.paginate_queryset(qs, request)
+            serializer = WorkflowSerializer(paginated_brand, many=True,context={'request': request})
+            return self.handle_success_response(
+                status.HTTP_200_OK, serialized_data=serializer.data
+            )
+        except Exception as e:
+            return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
+
+
+
+    
+class FuelWorkflowRequest(ResponseMixin,GetSingleObjectMixin,APIView):
+    def post(self, request):
+        request_type = request.GET.get("request")
+        
+        if request_type == "CreateFuelRequest":
+            return self.CreateFuelRequest(request)
+        else:
+            return self.handle_error_response(status_code=400,error_message=f"{request_type} is not a valid query param value")
+    def get(self,request):
+        request_type = request.GET.get("request")
+        
+        if request_type == "GetFuelRequest":
+            return self.GetFuelRequest(request)    
+        
+    def CreateFuelRequest(self,request):
+        payload = request.POST.copy()
+        print(payload)
+        payload["request_by"]=request.user.id
+        serializer=RequestFuelSerializer(data=payload)
+        if serializer.is_valid():
+            serializer.save()
+            return self.handle_success_response(status.HTTP_201_CREATED,serialized_data=serializer.data,message="successfully created workflow")
+        else:
+             return self.handle_serializererror_response(status.HTTP_400_BAD_REQUEST,**serializer.errors)
+    def GetFuelRequest(self, request):
+        try:
+            paginator = CustomPagination()
+            qs = FuelWorkflow.objects.all()
+            paginated_qs = paginator.paginate_queryset(qs, request)
+            serializer = RequestFuelSerializer(paginated_qs, many=True,context={'request': request})
+            return paginator.paginated_response(data=serializer.data)
+        except Exception as e:
+            return self.handle_error_response(str(e), status.HTTP_400_BAD_REQUEST)
+        
 class SupplierDetailAPIView(ResponseMixin, GetSingleObjectMixin, APIView):
     def get(self, request, pk):
         supplier, supplier_error = self.get_object(SupplierModel, pk)
@@ -181,8 +216,15 @@ class ApproveWorkflow(APIView,ResponseMixin,GetSingleObjectMixin):
             if serializer.is_valid():
                 return self.ApproveMaterialsFlow(request, serializer.validated_data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif request_type=="approve_fuel_workflow":
+            serializer = ApproveFuelWorkflowSerializer(data=request.data,context={'request': request})
+            if serializer.is_valid():
+                return self.ApproveFuelworkFlow(request, serializer.validated_data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return self.handle_error_response(error_message="request type is not valid",status_code=400)
+        
     def ApproveMaterialsFlow(self,request,validated_data):
         workflow_id = validated_data.get("workflow_id")
         bill_amount = validated_data.get("bill_amount")
@@ -199,6 +241,22 @@ class ApproveWorkflow(APIView,ResponseMixin,GetSingleObjectMixin):
             workflow.bill_amount = bill_amount
         if bill_image and isinstance(bill_image, UploadedFile):
             workflow.bill_image = bill_image
+        workflow.save()
+        
+
+        return self.handle_success_response(message="workflow approved successfully",status_code=200)
+    
+    def ApproveFuelworkFlow(self,request,validated_data):
+        workflow_id = validated_data.get("workflow_id")
+
+        
+        # Retrieve the workflow object
+        workflow, error = self.get_object(FuelWorkflow, workflow_id)
+        if not workflow:
+            return self.handle_error_response(error, status.HTTP_404_NOT_FOUND)
+        
+        # Update the workflow with new information
+        workflow.status = 'approved'
         workflow.save()
         
 

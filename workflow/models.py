@@ -49,7 +49,7 @@ class RequestItemDetails(DateTimeModel):
         return self.items.name
 
 
-class FuelWorkflow(models.Model):
+class FuelWorkflow(DateTimeModel):
     vehicle = models.ForeignKey(VehicleModel, on_delete=models.SET_NULL, null=True, blank=True)
     fuel_supplier = models.ForeignKey(SupplierModel, on_delete=models.SET_NULL, null=True, blank=True)
     fuel_rate = models.DecimalField(max_digits=10, decimal_places=2)
@@ -96,3 +96,6 @@ class FuelWorkflow(models.Model):
 
     def __str__(self):
         return self.vehicle.vehicle_number
+    
+    class Meta:
+        ordering=["-created_at"]
