@@ -44,9 +44,7 @@ class SupplierModel(DateTimeModel):
 class WarehouseModel(DateTimeModel):
     name = models.CharField(max_length=255, unique=True)
     image = models.ImageField(upload_to="warehouse/", blank=True, null=True)
-    contact_person = models.ForeignKey(
-        CustomUser, on_delete=models.DO_NOTHING, blank=True, null=True
-    )
+    contact_person = models.ForeignKey(CustomUser, on_delete=models.DO_NOTHING, blank=True, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     street = models.CharField(max_length=255, blank=True, null=True)
