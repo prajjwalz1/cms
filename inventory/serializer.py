@@ -34,10 +34,12 @@ class SiteInventoryDetailsSerialzier(serializers.ModelSerializer):
                 userperformance.save()
                 print(UserPerfomance)
                 data['request'] = {"status":"pending","message":f"{current_site.name} has Pending workflow request to be appoved"}
+                
             else:
                 data['request'] = {"status":"Alert","message":f'The inventory is Low for {instance.item} in {current_site.name} but has not received the workflow request'}
         else:
             data['request'] = "No action needed"
+        data["progress"]=current_site.project.project_progress
         return data
 
 class WarehouseInventorydetailsSerialzier(serializers.ModelSerializer):

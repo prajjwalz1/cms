@@ -144,7 +144,7 @@ class Project(DateTimeModel):
     project_location=models.CharField(null=True,blank=True)
     project_start_date=models.DateField(null=True,blank=True)
     project_dead_line=models.DateField(null=True,blank=True)
-    project_progress=models.CharField(max_length=255,null=True,blank=True)
+    project_progress=models.IntegerField(null=True,blank=True)
     project_manager=models.ForeignKey(CustomUser,on_delete=models.DO_NOTHING, null=True,blank=True)
 
     def __str__(self) -> str:
@@ -170,7 +170,7 @@ class SiteModel(DateTimeModel):
     contact_person = models.ForeignKey(
         CustomUser, on_delete=models.DO_NOTHING, blank=True, null=True
     )
-    project=models.ForeignKey(Project,on_delete=models.SET_NULL,null=True,blank=True)
+    project=models.ForeignKey(Project,on_delete=models.DO_NOTHING,default=1)
 
     def __str__(self) -> str:
         return self.name
