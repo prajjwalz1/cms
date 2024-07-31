@@ -72,7 +72,7 @@ class SiteModelSerializer(serializers.ModelSerializer):
     project_progress=serializers.IntegerField(source="project.project_progress")
     class Meta:
         model = SiteModel
-        fields = ["id","name","city","state","street","image","start_date","end_date","contact_person","project","project_progress"]
+        fields = ["id","name","city","state","street","image","start_date","end_date","contact_person","project","project_progress","last_modified"]
 
 
 class SiteModel_SelectRelated_Serializer(serializers.ModelSerializer):
