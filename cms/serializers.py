@@ -61,7 +61,7 @@ class VehicleModelSerializer(serializers.ModelSerializer):
 
 class VehicleModel_SelectRelated_Serializer(serializers.ModelSerializer):
     contact_person = serializers.CharField(source="contact_person.username")
-
+    
     class Meta:
         model = VehicleModel
         fields = "__all__"
@@ -69,10 +69,10 @@ class VehicleModel_SelectRelated_Serializer(serializers.ModelSerializer):
 
 # ------------------- SITE -------------------------
 class SiteModelSerializer(serializers.ModelSerializer):
-
+    project_progress=serializers.IntegerField(source="project.project_progress")
     class Meta:
         model = SiteModel
-        fields = "__all__"
+        fields = ["id","name","city","state","street","image","start_date","end_date","contact_person","project","project_progress"]
 
 
 class SiteModel_SelectRelated_Serializer(serializers.ModelSerializer):

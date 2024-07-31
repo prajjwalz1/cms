@@ -38,8 +38,7 @@ class SiteInventoryDetailsSerialzier(serializers.ModelSerializer):
             else:
                 data['request'] = {"status":"Alert","message":f'The inventory is Low for {instance.item} in {current_site.name} but has not received the workflow request'}
         else:
-            data['request'] = "No action needed"
-        data["progress"]=current_site.project.project_progress
+             data['request'] = {"status":"Ok","message":"No Action required"}
         return data
 
 class WarehouseInventorydetailsSerialzier(serializers.ModelSerializer):
@@ -69,7 +68,7 @@ class WarehouseInventorydetailsSerialzier(serializers.ModelSerializer):
             else:
                 data['request'] = {"status":"Alert","message":f'The inventory is Low for {instance.item} in {current_warehouse.name} but has not received the workflow request'}
         else:
-            data['request'] = {"status":"Ok","message":""}
+            data['request'] = {"status":"Ok","message":"No Action required"}
         # print(pending_workflows.item,".................")
         return data
 
