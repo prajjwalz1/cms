@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from .views import index
+from . import views
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', views.pendingpay,name='pending_payment'),
+    # path('admin/', admin.site.urls),
     path('', index),
     path('api/v1/',include('cms.urls')),
     path('api/bluebook/',include('bluebook.urls')),
