@@ -502,7 +502,7 @@ class SiteAPIView(ResponseMixin, APIView):
             paginator = self.pagination_class()
             site = SiteModel.objects.all()
             paginated_site = paginator.paginate_queryset(site, request)
-            serializer = SiteModel_SelectRelated_Serializer(paginated_site, many=True)
+            serializer = SiteModel_SelectRelated_Serializer(paginated_site,context={"context":request}, many=True)
             return self.handle_success_response(
                 status.HTTP_200_OK, serialized_data=serializer.data
             )
