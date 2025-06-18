@@ -35,8 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
-    "https://cms.kailashmanagement.com.au",
-    "http://localhost",
+    "https://kailashcms.carringmanagement.com.au"
     "http://localhost:8000",        # if you run Django dev server on 8000
     "http://127.0.0.1",
     "http://127.0.0.1:8000",       # add ports you use locally
