@@ -41,7 +41,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",       # add ports you use locally
 ]
 # Application definition
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://kailashcms.carringmanagement.com.au",
+]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
