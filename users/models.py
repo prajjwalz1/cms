@@ -1,8 +1,10 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
 from cms.mixins import *
+
 # from workflow.models import *
 # Create your models here.
 
@@ -14,7 +16,8 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=20, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if self.pk is None:  # New user instance, hash the password
+        # Hash password if not already hashed (i.e., plain-text)
+        if self.password and not self.password.startswith('pbkdf2_'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
 
